@@ -130,9 +130,12 @@ GLFWwindow *gl_init(int argc, char *argv[])
   /* Initialize the library */
   if (!glfwInit())
     return NULL;
+ 
+  GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+  const GLFWvidmode *vidmode = glfwGetVideoMode(monitor);
 
   /* Create a windowed mode window and its OpenGL context */
-  window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+  window = glfwCreateWindow(vidmode->width, vidmode->height, "Hello World", monitor, NULL);
   if (!window)
   {
     glfwTerminate();
@@ -148,8 +151,8 @@ GLFWwindow *gl_init(int argc, char *argv[])
 void game_loop(GLFWwindow *window)
 {
   /* Loop until the user closes the window */
-  while (!glfwWindowShouldClose(window))
-  {
+  bool stop = false;
+  while ((!stop) &&(!glfwWindowShouldClose(window))) {
     /* Render here */
     game_tick();
     gl_display();
@@ -158,6 +161,12 @@ void game_loop(GLFWwindow *window)
 
     /* Poll for and process events */
     glfwPollEvents();
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+      stop = true;
+    }
+
+
   }
 
   glfwTerminate();
