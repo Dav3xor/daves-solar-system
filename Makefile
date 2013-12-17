@@ -2,4 +2,4 @@
 # checking to see if the c code passes through valgrind, etc...
 
 qt: ../pyquadtree/quadtree.c gl.c main.c physics.c util.c polygon.c game.h
-	gcc -o sw ../pyquadtree/quadtree.c gl.c main.c physics.c util.c polygon.c -framework OpenGL -framework GLUT -std=c99 -lm
+	gcc -o sw ../pyquadtree/quadtree.c gl.c main.c physics.c util.c polygon.c -framework OpenGL -lglfw -std=c99 -lm

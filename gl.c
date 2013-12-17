@@ -1,6 +1,7 @@
-#include <GLUT/glut.h>
+//#include <GLUT/glut.h>
+#include <GLFW/glfw3.h>
 #include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
+//#include <OpenGL/glu.h>
 #include <math.h>
 
 #include "game.h"
@@ -86,11 +87,6 @@ void game_tick(void)
   do_move(&game.planet[3]);
 }
 
-void gl_idle(void)
-{
-  TIMING(game_tick());
-  glutPostRedisplay();
-}
 
 void gl_display(void)
 {
@@ -127,7 +123,47 @@ void gl_display(void)
   //glutSwapBuffers();
 }
 
+GLFWwindow *gl_init(int argc, char *argv[])
+{
+  GLFWwindow* window;
 
+  /* Initialize the library */
+  if (!glfwInit())
+    return NULL;
+
+  /* Create a windowed mode window and its OpenGL context */
+  window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+  if (!window)
+  {
+    glfwTerminate();
+    return NULL;
+  }
+
+  /* Make the window's context current */
+  glfwMakeContextCurrent(window);
+  
+  return window;
+}
+
+void game_loop(GLFWwindow *window)
+{
+  /* Loop until the user closes the window */
+  while (!glfwWindowShouldClose(window))
+  {
+    /* Render here */
+    game_tick();
+    gl_display();
+    /* Swap front and back buffers */
+    glfwSwapBuffers(window);
+
+    /* Poll for and process events */
+    glfwPollEvents();
+  }
+
+  glfwTerminate();
+}
+
+/*
 void gl_init(int argc, char *argv[]) // Called before main loop to set up the program
 {
   glutInit(&argc, argv); // Initializes glut
@@ -162,5 +198,5 @@ void gl_init(int argc, char *argv[]) // Called before main loop to set up the pr
   // Starts the program.
   glutMainLoop();
 }
-
+*/
 

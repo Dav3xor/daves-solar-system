@@ -1,3 +1,4 @@
+#include <GLFW/glfw3.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -78,7 +79,8 @@ void do_move(GameObject *a);
 void print_location(GameObject *a);
 
 void gl_display(void);
-void gl_init(int argc, char *argv[]);
+GLFWwindow *gl_init(int argc, char *argv[]);
+void game_loop(GLFWwindow *window);
 
 void   poly_regular(unsigned int numsides, double distance, Point *points);
 Shape *poly_asteroid(unsigned int seed);

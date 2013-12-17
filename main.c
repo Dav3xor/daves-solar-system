@@ -1,4 +1,6 @@
+#include <GLFW/glfw3.h>
 #include "game.h"
+
 Game game;
 /*
   = { 
@@ -56,5 +58,6 @@ int main(int argc, char *argv[])
   
   
   
-  gl_init(argc, argv);
+  GLFWwindow * window = gl_init(argc, argv);
+  game_loop(window);
 }
