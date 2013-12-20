@@ -57,7 +57,7 @@ Shape *poly_asteroid(unsigned int seed)
   unsigned int numsides = 5 + (rand() % 5); 
   printf("numsides = %d\n",numsides); 
   // put a regular polygon into a
-  poly_regular(numsides, .2, a);
+  poly_regular(numsides, 50.0, a);
 
   // bumpify the regular polygon
   numsides = poly_bumpify(a,b,numsides);
@@ -70,7 +70,7 @@ Shape *poly_asteroid(unsigned int seed)
   for(int i = 0; i < shape->numpoints; i++) {
     shape->vertices[i].location.x = b[i].x;
     shape->vertices[i].location.y = b[i].y;
-    shape->vertices[i].color[0] = 192;
+    shape->vertices[i].color[0] = 64;
     shape->vertices[i].color[1] = 192;
     shape->vertices[i].color[2] = 192;
     shape->vertices[i].color[3] = 255;

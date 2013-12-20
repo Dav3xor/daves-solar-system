@@ -43,6 +43,7 @@ struct Vertex
 
 struct Shape
 {
+  double        rotation;
   unsigned int  numpoints;
   Vertex       *vertices;
 };

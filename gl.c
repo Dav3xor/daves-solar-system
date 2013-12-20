@@ -1,6 +1,7 @@
 //#include <GLUT/glut.h>
 #include <GLFW/glfw3.h>
 #include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
 //#include <OpenGL/glu.h>
 #include <math.h>
 
@@ -11,27 +12,27 @@ extern Game game;
 
 void gl_drawprimitiveship(GameObject *ship)
 {
+  double px = ship->position.x;
+  double py = ship->position.y;
   glColor3f(.8f, .8f, .8f); // Blue
-  glVertex2f((ship->position.x/500.0)-0.01f, (ship->position.y/500.0)-0.0125f);
-  glVertex2f((ship->position.x/500.0)+0.01f, (ship->position.y/500.0)-0.0125f);
-  glVertex2f((ship->position.x/500.0),       (ship->position.y/500.0)+0.0125f);
+  glVertex2f((px)-1.f, (py)-1.25f);
+  glVertex2f((px)+1.f, (py)-1.25f);
+  glVertex2f((px),       (py)+1.25f);
 }
 
 void gl_drawprimitiveplanet(GameObject *planet)
 {
   glColor3f(1.0f, 1.0f, .5f); // bright pale yellow
-  glVertex2f((planet->position.x/500.0)-0.02, (planet->position.y/500.0)-0.025f);
-  glVertex2f((planet->position.x/500.0)+0.02, (planet->position.y/500.0)-0.025f);
-  glVertex2f((planet->position.x/500.0),       (planet->position.y/500.0)+0.025f);
+  glVertex2f((planet->position.x)-2.0f, (planet->position.y)-2.5f);
+  glVertex2f((planet->position.x)+2.0f, (planet->position.y)-2.5f);
+  glVertex2f((planet->position.x),       (planet->position.y)+2.5f);
 }
 
 void gl_drawshape(Shape *shape)
 {
-  glColor3f(1.0f, 1.0f, 1.0f); // bright pale yellow
-  for(int i = 0; i < shape->numpoints; i++) {
-    glVertex2f(shape->vertices[i].location.x,  shape->vertices[i].location.y);
-  }
-  glVertex2f(shape->vertices[0].location.x,  shape->vertices[0].location.y);
+  glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex),&shape->vertices[0].color[0]);
+  glVertexPointer(2, GL_DOUBLE, sizeof(Vertex), &shape->vertices[0].location.x);
+  glDrawArrays(GL_LINE_LOOP,0,shape->numpoints);
 }
     
 void handle_gravity(LeafData *data, void *arg)
@@ -47,7 +48,8 @@ void game_tick(void)
   for(int i=0; i<1000; i++){
     float oldx = game.ships[i].position.x;
     float oldy = game.ships[i].position.y;
-     
+    
+    // do all asteroid-asteroid gravity here
     maptonearby(&game.qtree,
                 &handle_gravity,
                 &game.ships[i],
@@ -59,11 +61,6 @@ void game_tick(void)
     do_gravity(&game.ships[i],&game.planet[2]);
     do_gravity(&game.ships[i],&game.planet[3]);
     
-    /*            
-    for(int j=i+1; j<1000; j++){
-      do_gravity(&game.ships[i],&game.ships[j]);
-    }
-    */
     do_move(&game.ships[i]);
     movepoint(&game.qtree,
               oldx,oldy,
@@ -94,33 +91,34 @@ void gl_display(void)
   glClear(GL_COLOR_BUFFER_BIT);
 
   glBegin(GL_TRIANGLES);          // Each set of 3 vertices form a triangle
+  
 
-
-  //print_location(&game.ships[0]);
-  //print_location(&game.planet);
   for(int i=0; i<1000; i++) {
     gl_drawprimitiveship(&game.ships[i]);
   }
+  
   gl_drawprimitiveplanet(&game.planet[0]);
   gl_drawprimitiveplanet(&game.planet[1]);
   gl_drawprimitiveplanet(&game.planet[2]);
   gl_drawprimitiveplanet(&game.planet[3]);
+  
   glEnd();
 
-  glBegin(GL_LINE_LOOP);
   
   counter++;
   if(!(counter%49)){
     free(game.asteroid);
     game.asteroid = poly_asteroid(counter);
   }
+  game.asteroid->rotation += 5;
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
   gl_drawshape(game.asteroid);
 
-  glEnd();
 
   glFlush();
 
-  //glutSwapBuffers();
 }
 
 GLFWwindow *gl_init(int argc, char *argv[])
@@ -144,7 +142,8 @@ GLFWwindow *gl_init(int argc, char *argv[])
 
   /* Make the window's context current */
   glfwMakeContextCurrent(window);
-  
+ 
+  gluOrtho2D(vidmode->width/-2,vidmode->width/2,vidmode->height/-2,vidmode->height/2);
   return window;
 }
 
@@ -153,10 +152,14 @@ void game_loop(GLFWwindow *window)
   /* Loop until the user closes the window */
   bool stop = false;
   while ((!stop) &&(!glfwWindowShouldClose(window))) {
-    /* Render here */
+    
+    // update positions.
     game_tick();
+
+    // draw
     gl_display();
-    /* Swap front and back buffers */
+
+    // do double buffering... 
     glfwSwapBuffers(window);
 
     /* Poll for and process events */
