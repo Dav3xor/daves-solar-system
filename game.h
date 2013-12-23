@@ -77,8 +77,11 @@ struct Game
     {
       GLuint  program;
       GLuint  scale_loc;
+      GLuint  origin_loc;
       GLfloat scalex;
       GLfloat scaley;
+      GLfloat originx;
+      GLfloat originy;
     }shape;
   }gl;
 };

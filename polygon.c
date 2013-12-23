@@ -63,6 +63,8 @@ Shape *poly_asteroid(unsigned int seed)
   numsides = poly_bumpify(a,b,numsides);
   numsides = poly_bumpify(b,a,numsides);
   numsides = poly_bumpify(a,b,numsides);
+  numsides = poly_bumpify(b,a,numsides);
+  numsides = poly_bumpify(a,b,numsides);
 
   Shape *shape = calloc(numsides, sizeof(Shape)+(sizeof(Vertex)*numsides));
   shape->numpoints = numsides;

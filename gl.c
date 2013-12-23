@@ -47,11 +47,12 @@ void gl_buildshaders(Game *game)
 {
   const char *shape_vertex_source = 
     "uniform vec2 scale;                                              \n"
+    "uniform vec2 origin;                                             \n" 
     "void main()                                                      \n"
     "{                                                                \n"
     "  // Transforming The Vertex                                     \n"
-    "  gl_Position.x = gl_Vertex.x*scale.x;                           \n"
-    "  gl_Position.y = gl_Vertex.y*scale.y;                           \n"
+    "  gl_Position.x = (origin.x-gl_Vertex.x)*scale.x;                \n"
+    "  gl_Position.y = (origin.y-gl_Vertex.y)*scale.y;                \n"
     "}                                                                \n";
   
   const char *shape_fragment_source = 
@@ -85,7 +86,8 @@ void gl_buildshaders(Game *game)
 
 
   game->gl.shape.scale_loc = glGetUniformLocation(shape_program, "scale"); 
-  printf("-- %d --\n",game->gl.shape.scale_loc);
+  game->gl.shape.origin_loc = glGetUniformLocation(shape_program, "origin"); 
+  printf("-- %d --\n",game->gl.shape.origin_loc);
 }
 
 void gl_drawprimitiveship(GameObject *ship)
@@ -190,9 +192,17 @@ void gl_display(void)
   }
   game.asteroid->rotation += 5;
 
+  game.gl.shape.originx = game.planet[1].position.x;
+  game.gl.shape.originy = game.planet[1].position.y;
+  
+
   glUniform2f(game.gl.shape.scale_loc,
               game.gl.shape.scalex,
               game.gl.shape.scaley);
+  
+  glUniform2f(game.gl.shape.origin_loc,
+              game.gl.shape.originx,
+              game.gl.shape.originy);
 
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_COLOR_ARRAY);
@@ -229,7 +239,12 @@ GLFWwindow *gl_init(int argc, char *argv[])
   
   game.gl.shape.scalex = 1.0/(500.0 * ((float)vidmode->width / (float)vidmode->height));
   game.gl.shape.scaley = 1.0/(500.0);
+  
+  game.gl.shape.scalex *= 4.0;
+  game.gl.shape.scaley *= 4.0;
 
+  game.gl.shape.originx = 0.0;
+  game.gl.shape.originy = 100.0;
   return window;
 }
 
