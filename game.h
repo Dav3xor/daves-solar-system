@@ -67,10 +67,20 @@ struct GameObject
 
 struct Game
 {
-  QuadTree qtree;
-  GameObject ships[1000];
-  GameObject planet[4];
-  Shape *asteroid;
+  QuadTree    qtree;
+  GameObject  ships[1000];
+  GameObject  planet[4];
+  Shape      *asteroid;
+  struct gl
+  {
+    struct shape
+    {
+      GLuint  program;
+      GLuint  scale_loc;
+      GLfloat scalex;
+      GLfloat scaley;
+    }shape;
+  }gl;
 };
 
 void do_gravity(GameObject *a, GameObject *b);

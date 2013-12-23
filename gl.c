@@ -10,6 +10,84 @@
 extern Game game;
 
 
+void gl_error(void)
+{
+  GLenum errCode;
+  const GLubyte *errString;
+
+  if ((errCode = glGetError()) != GL_NO_ERROR) {
+    errString = gluErrorString(errCode);
+    fprintf (stderr, "OpenGL Error: %s\n", errString);
+  }
+}
+
+void gl_printlog(GLuint obj)
+{
+  int infologLength = 0;
+  int maxLength;
+ 
+  if(glIsShader(obj))
+    glGetShaderiv(obj,GL_INFO_LOG_LENGTH,&maxLength);
+  else
+    glGetProgramiv(obj,GL_INFO_LOG_LENGTH,&maxLength);
+ 
+  char infoLog[maxLength];
+ 
+  if (glIsShader(obj))
+    glGetShaderInfoLog(obj, maxLength, &infologLength, infoLog);
+  else
+    glGetProgramInfoLog(obj, maxLength, &infologLength, infoLog);
+ 
+  if (infologLength > 0)
+    printf("%s\n",infoLog);
+}
+
+
+void gl_buildshaders(Game *game)
+{
+  const char *shape_vertex_source = 
+    "uniform vec2 scale;                                              \n"
+    "void main()                                                      \n"
+    "{                                                                \n"
+    "  // Transforming The Vertex                                     \n"
+    "  gl_Position.x = gl_Vertex.x*scale.x;                           \n"
+    "  gl_Position.y = gl_Vertex.y*scale.y;                           \n"
+    "}                                                                \n";
+  
+  const char *shape_fragment_source = 
+    "void main()                                                      \n"
+    "{                                                                \n"
+    "  // Setting Each Pixel To Red                                   \n"
+    "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);                       \n"
+    "}                                                                \n";
+
+  GLuint shape_program;
+  GLuint shape_vertex_shader;
+  GLuint shape_fragment_shader;
+
+  shape_vertex_shader   = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(shape_vertex_shader, 1, &shape_vertex_source, NULL);
+  glCompileShader(shape_vertex_shader);
+  gl_printlog(shape_vertex_shader);
+  
+  shape_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(shape_fragment_shader, 1, &shape_fragment_source, NULL);
+  glCompileShader(shape_fragment_shader);
+  gl_printlog(shape_fragment_shader);
+
+  shape_program = glCreateProgram();
+  glAttachShader(shape_program, shape_vertex_shader); 
+  glAttachShader(shape_program, shape_fragment_shader); 
+  
+  glLinkProgram(shape_program);
+  
+  glUseProgram(shape_program);
+
+
+  game->gl.shape.scale_loc = glGetUniformLocation(shape_program, "scale"); 
+  printf("-- %d --\n",game->gl.shape.scale_loc);
+}
+
 void gl_drawprimitiveship(GameObject *ship)
 {
   double px = ship->position.x;
@@ -112,6 +190,10 @@ void gl_display(void)
   }
   game.asteroid->rotation += 5;
 
+  glUniform2f(game.gl.shape.scale_loc,
+              game.gl.shape.scalex,
+              game.gl.shape.scaley);
+
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_COLOR_ARRAY);
   gl_drawshape(game.asteroid);
@@ -143,7 +225,11 @@ GLFWwindow *gl_init(int argc, char *argv[])
   /* Make the window's context current */
   glfwMakeContextCurrent(window);
  
-  gluOrtho2D(vidmode->width/-2,vidmode->width/2,vidmode->height/-2,vidmode->height/2);
+  gl_buildshaders(&game);
+  
+  game.gl.shape.scalex = 1.0/(500.0 * ((float)vidmode->width / (float)vidmode->height));
+  game.gl.shape.scaley = 1.0/(500.0);
+
   return window;
 }
 
