@@ -46,6 +46,27 @@ unsigned int poly_bumpify(Point *a, Point *b, unsigned int numsides)
   return j; 
 }
 
+
+Shape *poly_ship(void)
+{
+  Shape *shape = calloc(1, sizeof(Shape));
+  shape->numpoints = 4;
+  shape->vertices = calloc(shape->numpoints, sizeof(Vertex));
+  
+  shape->vertices[0].location.x = 0.0;
+  shape->vertices[0].location.y = 2.5;
+  
+  shape->vertices[1].location.x = 1.5;
+  shape->vertices[1].location.y = -2.5;
+  
+  shape->vertices[2].location.x = 0.0;
+  shape->vertices[2].location.y = -1.5;
+  
+  shape->vertices[3].location.x = -1.5;
+  shape->vertices[3].location.y = -2.5;
+  return shape;
+}
+
 Shape *poly_asteroid(unsigned int seed) 
 {
   Point a[100];
@@ -66,16 +87,18 @@ Shape *poly_asteroid(unsigned int seed)
   numsides = poly_bumpify(b,a,numsides);
   numsides = poly_bumpify(a,b,numsides);
 
-  Shape *shape = calloc(numsides, sizeof(Shape)+(sizeof(Vertex)*numsides));
+  Shape *shape = calloc(1, sizeof(Shape));
   shape->numpoints = numsides;
-  shape->vertices = (Vertex *)shape + sizeof(Shape);
+  shape->vertices = calloc(numsides, sizeof(Vertex));
   for(int i = 0; i < shape->numpoints; i++) {
     shape->vertices[i].location.x = b[i].x;
     shape->vertices[i].location.y = b[i].y;
+    /*
     shape->vertices[i].color[0] = 64;
     shape->vertices[i].color[1] = 192;
     shape->vertices[i].color[2] = 192;
     shape->vertices[i].color[3] = 255;
+    */
   }
   return shape;
 }

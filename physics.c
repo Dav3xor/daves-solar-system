@@ -80,7 +80,7 @@ void do_move(GameObject *a)
     max = magnitude;
   }
   avg = (avg+avg+avg+avg+avg+magnitude)/6.0;
-  if (a == &game.ships[999]){
+  if (a == &game.asteroids[999]){
     //printf("min = %f max = %f avg = %f\n", min, max, avg);
   }
   #endif

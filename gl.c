@@ -126,27 +126,27 @@ void handle_gravity(LeafData *data, void *arg)
 void game_tick(void)
 {
   for(int i=0; i<1000; i++){
-    float oldx = game.ships[i].position.x;
-    float oldy = game.ships[i].position.y;
+    float oldx = game.asteroids[i].position.x;
+    float oldy = game.asteroids[i].position.y;
     
     // do all asteroid-asteroid gravity here
     maptonearby(&game.qtree,
                 &handle_gravity,
-                &game.ships[i],
+                &game.asteroids[i],
                 oldx, oldy,
                 15.0);
      
-    do_gravity(&game.ships[i],&game.planet[0]);
-    do_gravity(&game.ships[i],&game.planet[1]);
-    do_gravity(&game.ships[i],&game.planet[2]);
-    do_gravity(&game.ships[i],&game.planet[3]);
+    do_gravity(&game.asteroids[i],&game.planet[0]);
+    do_gravity(&game.asteroids[i],&game.planet[1]);
+    do_gravity(&game.asteroids[i],&game.planet[2]);
+    do_gravity(&game.asteroids[i],&game.planet[3]);
     
-    do_move(&game.ships[i]);
+    do_move(&game.asteroids[i]);
     movepoint(&game.qtree,
               oldx,oldy,
-              game.ships[i].position.x,
-              game.ships[i].position.y,
-              &game.ships[i]);
+              game.asteroids[i].position.x,
+              game.asteroids[i].position.y,
+              &game.asteroids[i]);
     
   }
 
@@ -174,7 +174,7 @@ void gl_display(void)
   
 
   for(int i=0; i<1000; i++) {
-    gl_drawprimitiveship(&game.ships[i]);
+    gl_drawprimitiveship(&game.asteroids[i]);
   }
   
   gl_drawprimitiveplanet(&game.planet[0]);
@@ -187,6 +187,7 @@ void gl_display(void)
   
   counter++;
   if(!(counter%49)){
+    free(game.asteroid->vertices);
     free(game.asteroid);
     game.asteroid = poly_asteroid(counter);
   }
@@ -207,7 +208,7 @@ void gl_display(void)
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_COLOR_ARRAY);
   gl_drawshape(game.asteroid);
-
+  gl_drawshape(game.ship);
 
   glFlush();
 

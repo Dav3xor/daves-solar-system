@@ -68,9 +68,10 @@ struct GameObject
 struct Game
 {
   QuadTree    qtree;
-  GameObject  ships[1000];
+  GameObject  asteroids[1000];
   GameObject  planet[4];
   Shape      *asteroid;
+  Shape      *ship;
   struct gl
   {
     struct shape
@@ -98,6 +99,7 @@ void game_loop(GLFWwindow *window);
 
 void   poly_regular(unsigned int numsides, double distance, Point *points);
 Shape *poly_asteroid(unsigned int seed);
+Shape *poly_ship(void);
 
 
 

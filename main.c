@@ -17,17 +17,17 @@ int main(int argc, char *argv[])
     if(rand()%2) {
       angle += 3.14159;
     }
-    game.ships[i].position.x = sin(angle) * distance;
-    game.ships[i].position.y = cos(angle) * distance;
+    game.asteroids[i].position.x = sin(angle) * distance;
+    game.asteroids[i].position.y = cos(angle) * distance;
     
-    game.ships[i].velocity.i = sin(angle+(3.14159/2.0))*speed;
-    game.ships[i].velocity.j = cos(angle+(3.14159/2.0))*speed;
+    game.asteroids[i].velocity.i = sin(angle+(3.14159/2.0))*speed;
+    game.asteroids[i].velocity.j = cos(angle+(3.14159/2.0))*speed;
     
-    game.ships[i].mass = .00002 + (rand()%100)/1000000.0;
+    game.asteroids[i].mass = .00002 + (rand()%100)/1000000.0;
     addpoint(&game.qtree, 
-             game.ships[i].position.x,
-             game.ships[i].position.y,
-             &game.ships[i]);
+             game.asteroids[i].position.x,
+             game.asteroids[i].position.y,
+             &game.asteroids[i]);
   }
   
   game.planet[0].position.x = 0.0;
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
   game.planet[3].mass = 0.0001;
   
   game.asteroid = poly_asteroid(6);  
-  
+  game.ship = poly_ship();  
   
   
   GLFWwindow * window = gl_init(argc, argv);
