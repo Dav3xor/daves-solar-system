@@ -184,12 +184,6 @@ void gl_display(void)
   glEnd();
 
   
-  counter++;
-  if(!(counter%49)){
-    free(game.asteroid->vertices);
-    free(game.asteroid);
-    game.asteroid = poly_asteroid(counter);
-  }
   game.asteroid->rotation += 5;
 
   game.gl.shape.originx = game.planet[1].object.position.x;

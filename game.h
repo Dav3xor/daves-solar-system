@@ -7,6 +7,10 @@
 
 #define PI 3.14159
 #define TAU 2*PI
+
+#define MAX_OBJECTS 100
+#define MAX_VERTICES 1000
+
 /*
 information to render each object:
 centerx
@@ -74,11 +78,15 @@ struct GameObject
 
 struct Game
 {
-  QuadTree    qtree;
-  GameObject  asteroids[1000];
-  GameObject  planet[4];
-  Shape      *asteroid;
-  Shape      *ship;
+  QuadTree     qtree;
+  GameObject   asteroids[1000];
+  GameObject   planet[4];
+  Shape       *asteroid;
+  Shape       *ship;
+  Vertex       vertices[MAX_VERTICES];
+  unsigned int numvertices;
+  Object       objects[MAX_OBJECTS];
+  unsigned int numobjects;
   struct gl
   {
     struct shape

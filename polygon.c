@@ -1,4 +1,5 @@
 #include "game.h"
+extern Game game;
 
 void poly_regular(unsigned int numsides, double distance, Point *points)
 {
@@ -46,25 +47,49 @@ unsigned int poly_bumpify(Point *a, Point *b, unsigned int numsides)
   return j; 
 }
 
+Shape *make_shape(Point *points, unsigned int numpoints)
+{
+  if ((game.numvertices+1 > MAX_VERTICES)||(game.numobjects+1 > MAX_OBJECTS)){
+    return NULL;
+  }
+
+  Shape *shape = calloc(1, sizeof(Shape));
+
+  shape->numpoints = numpoints;
+  shape->vertices = &game.vertices[game.numvertices];
+
+  for (int i=0; i<numpoints; i++){
+    game.vertices[game.numvertices].location.x = points[i].x;
+    game.vertices[game.numvertices].location.y = points[i].y;
+    game.vertices[game.numvertices].object     = game.numobjects;
+    game.numvertices++;
+  }
+  game.objects[game.numobjects].position.x = 0;
+  game.objects[game.numobjects].position.y = 0;
+  game.objects[game.numobjects].orientation = 0;
+
+  game.numobjects++;
+
+  return shape;
+}
 
 Shape *poly_ship(void)
 {
-  Shape *shape = calloc(1, sizeof(Shape));
-  shape->numpoints = 4;
-  shape->vertices = calloc(shape->numpoints, sizeof(Vertex));
+  Point points[4];
   
-  shape->vertices[0].location.x = 0.0;
-  shape->vertices[0].location.y = 2.5;
+  points[0].x = 0.0;
+  points[0].y = 2.5;
   
-  shape->vertices[1].location.x = 1.5;
-  shape->vertices[1].location.y = -2.5;
+  points[1].x = 1.5;
+  points[1].y = -2.5;
   
-  shape->vertices[2].location.x = 0.0;
-  shape->vertices[2].location.y = -1.5;
+  points[2].x = 0.0;
+  points[2].y = -1.5;
   
-  shape->vertices[3].location.x = -1.5;
-  shape->vertices[3].location.y = -2.5;
-  return shape;
+  points[3].x = -1.5;
+  points[3].y = -2.5;
+ 
+  return make_shape(points,4);
 }
 
 Shape *poly_asteroid(unsigned int seed) 
@@ -77,6 +102,7 @@ Shape *poly_asteroid(unsigned int seed)
   
   unsigned int numsides = 5 + (rand() % 5); 
   printf("numsides = %d\n",numsides); 
+  
   // put a regular polygon into a
   poly_regular(numsides, 50.0, a);
 
@@ -87,20 +113,9 @@ Shape *poly_asteroid(unsigned int seed)
   numsides = poly_bumpify(b,a,numsides);
   numsides = poly_bumpify(a,b,numsides);
 
-  Shape *shape = calloc(1, sizeof(Shape));
-  shape->numpoints = numsides;
-  shape->vertices = calloc(numsides, sizeof(Vertex));
-  for(int i = 0; i < shape->numpoints; i++) {
-    shape->vertices[i].location.x = b[i].x;
-    shape->vertices[i].location.y = b[i].y;
-    /*
-    shape->vertices[i].color[0] = 64;
-    shape->vertices[i].color[1] = 192;
-    shape->vertices[i].color[2] = 192;
-    shape->vertices[i].color[3] = 255;
-    */
-  }
-  return shape;
+  printf("numsides2 = %d\n",numsides);
+  
+  return make_shape(b,numsides);
 }
 
 
