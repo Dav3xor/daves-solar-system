@@ -110,7 +110,6 @@ void gl_drawprimitiveplanet(GameObject *planet)
 
 void gl_drawshape(Shape *shape)
 {
-  glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex),&shape->vertices[0].color[0]);
   glVertexPointer(2, GL_DOUBLE, sizeof(Vertex), &shape->vertices[0].location.x);
   glDrawArrays(GL_LINE_LOOP,0,shape->numpoints);
 }

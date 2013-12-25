@@ -38,7 +38,7 @@ struct Point
 struct Vertex
 {
   Point location;
-  unsigned char color[4];
+  unsigned int object;
 };
 
 
