@@ -26,6 +26,7 @@ typedef struct Vertex     Vertex;
 typedef struct Shape      Shape;
 typedef struct Vector     Vector;
 typedef struct GameObject GameObject;
+typedef struct Object     Object;
 typedef struct Game       Game;
 
 struct Point
@@ -55,15 +56,21 @@ struct Vector
   double j;
 };
 
+struct Object
+{
+Point   position;
+double  orientation;
+};
+
 struct GameObject
 {
+  Object        object;
   Shape         shape;
-  Point         position;
   Vector        velocity;
-  double        direction;
   double        mass;
   unsigned int  flags;
 };
+
 
 struct Game
 {

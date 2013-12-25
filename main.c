@@ -17,39 +17,39 @@ int main(int argc, char *argv[])
     if(rand()%2) {
       angle += 3.14159;
     }
-    game.asteroids[i].position.x = sin(angle) * distance;
-    game.asteroids[i].position.y = cos(angle) * distance;
+    game.asteroids[i].object.position.x = sin(angle) * distance;
+    game.asteroids[i].object.position.y = cos(angle) * distance;
     
     game.asteroids[i].velocity.i = sin(angle+(3.14159/2.0))*speed;
     game.asteroids[i].velocity.j = cos(angle+(3.14159/2.0))*speed;
     
     game.asteroids[i].mass = .00002 + (rand()%100)/1000000.0;
     addpoint(&game.qtree, 
-             game.asteroids[i].position.x,
-             game.asteroids[i].position.y,
+             game.asteroids[i].object.position.x,
+             game.asteroids[i].object.position.y,
              &game.asteroids[i]);
   }
   
-  game.planet[0].position.x = 0.0;
-  game.planet[0].position.y = 0.0;
+  game.planet[0].object.position.x = 0.0;
+  game.planet[0].object.position.y = 0.0;
   game.planet[0].velocity.i = 0.0;
   game.planet[0].velocity.j = 0.0;
   game.planet[0].mass = 10.0;
   
-  game.planet[1].position.x = 150.0;
-  game.planet[1].position.y = 0.0;
+  game.planet[1].object.position.x = 150.0;
+  game.planet[1].object.position.y = 0.0;
   game.planet[1].velocity.i = 0.0;
   game.planet[1].velocity.j = -.255;
   game.planet[1].mass = .10;
   
-  game.planet[2].position.x = 155.0;
-  game.planet[2].position.y = 0.0;
+  game.planet[2].object.position.x = 155.0;
+  game.planet[2].object.position.y = 0.0;
   game.planet[2].velocity.i = 0.0;
   game.planet[2].velocity.j = -0.176;
   game.planet[2].mass = .001;
   
-  game.planet[3].position.x = -10000.0;
-  game.planet[3].position.y = 0.0;
+  game.planet[3].object.position.x = -10000.0;
+  game.planet[3].object.position.y = 0.0;
   game.planet[3].velocity.i = 0.0;
   game.planet[3].velocity.j = 0.0;
   game.planet[3].mass = 0.0001;

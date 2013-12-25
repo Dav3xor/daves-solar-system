@@ -92,8 +92,8 @@ void gl_buildshaders(Game *game)
 
 void gl_drawprimitiveship(GameObject *ship)
 {
-  double px = ship->position.x;
-  double py = ship->position.y;
+  double px = ship->object.position.x;
+  double py = ship->object.position.y;
   glColor3f(.8f, .8f, .8f); // Blue
   glVertex2f((px)-1.f, (py)-1.25f);
   glVertex2f((px)+1.f, (py)-1.25f);
@@ -103,9 +103,9 @@ void gl_drawprimitiveship(GameObject *ship)
 void gl_drawprimitiveplanet(GameObject *planet)
 {
   glColor3f(1.0f, 1.0f, .5f); // bright pale yellow
-  glVertex2f((planet->position.x)-2.0f, (planet->position.y)-2.5f);
-  glVertex2f((planet->position.x)+2.0f, (planet->position.y)-2.5f);
-  glVertex2f((planet->position.x),       (planet->position.y)+2.5f);
+  glVertex2f((planet->object.position.x)-2.0f, (planet->object.position.y)-2.5f);
+  glVertex2f((planet->object.position.x)+2.0f, (planet->object.position.y)-2.5f);
+  glVertex2f((planet->object.position.x),       (planet->object.position.y)+2.5f);
 }
 
 void gl_drawshape(Shape *shape)
@@ -126,8 +126,8 @@ void handle_gravity(LeafData *data, void *arg)
 void game_tick(void)
 {
   for(int i=0; i<1000; i++){
-    float oldx = game.asteroids[i].position.x;
-    float oldy = game.asteroids[i].position.y;
+    float oldx = game.asteroids[i].object.position.x;
+    float oldy = game.asteroids[i].object.position.y;
     
     // do all asteroid-asteroid gravity here
     maptonearby(&game.qtree,
@@ -144,8 +144,8 @@ void game_tick(void)
     do_move(&game.asteroids[i]);
     movepoint(&game.qtree,
               oldx,oldy,
-              game.asteroids[i].position.x,
-              game.asteroids[i].position.y,
+              game.asteroids[i].object.position.x,
+              game.asteroids[i].object.position.y,
               &game.asteroids[i]);
     
   }
@@ -193,8 +193,8 @@ void gl_display(void)
   }
   game.asteroid->rotation += 5;
 
-  game.gl.shape.originx = game.planet[1].position.x;
-  game.gl.shape.originy = game.planet[1].position.y;
+  game.gl.shape.originx = game.planet[1].object.position.x;
+  game.gl.shape.originy = game.planet[1].object.position.y;
   
 
   glUniform2f(game.gl.shape.scale_loc,
