@@ -75,7 +75,7 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
   /* OTHER STUFF GOES HERE NEXT */
 
 
-float points[] = {
+double points[] = {
    0.0f,  0.5f,
    0.5f, -0.5f,
   -0.5f, -0.5f
@@ -84,14 +84,21 @@ float points[] = {
 game.gl.vbo = 0;
 glGenBuffers (1, &game.gl.vbo);
 glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
-glBufferData (GL_ARRAY_BUFFER, 6 * sizeof (float), points, GL_STATIC_DRAW);
+printf("sizeof g.v = %d\n",sizeof(game.vertices));
+for(int i=0; i<game.numvertices; i++){
+  printf("(%f,%f)\n",game.vertices[i].location.x, game.vertices[i].location.y);
+}
+
+
+
+glBufferData (GL_ARRAY_BUFFER, sizeof(game.vertices), &game.vertices[0], GL_STATIC_DRAW);
 
 game.gl.vao = 0;
 glGenVertexArrays (1, &game.gl.vao);
 glBindVertexArray (game.gl.vao);
 glEnableVertexAttribArray (0);
 glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
-glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+glVertexAttribPointer (0, 2, GL_DOUBLE, GL_FALSE, sizeof(Vertex), (GLubyte*)NULL);
 
 return window;
 }
@@ -163,7 +170,7 @@ void game_loop(GLFWwindow *window)
 
     glBindVertexArray (game.gl.vao);
     // draw points 0-3 from the currently bound VAO with current in-use shader
-    glDrawArrays (GL_TRIANGLES, 0, 3);
+    glDrawArrays (GL_LINE_LOOP, 0, game.numvertices);
     // update other events like input handling 
     glfwPollEvents ();
     // put the stuff we've been drawing onto the display

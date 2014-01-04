@@ -104,7 +104,7 @@ Shape *poly_asteroid(unsigned int seed)
   printf("numsides = %d\n",numsides); 
   
   // put a regular polygon into a
-  poly_regular(numsides, 50.0, a);
+  poly_regular(numsides, .2, a);
 
   // bumpify the regular polygon
   numsides = poly_bumpify(a,b,numsides);
