@@ -1,25 +1,10 @@
-//#include <GLUT/glut.h>
-#include <GLFW/glfw3.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-//#include <OpenGL/glu.h>
-#include <math.h>
-
+//#include <GL/glew.h> // include GLEW and new version of GL on Windows
+#include <GLFW/glfw3.h> // GLFW helper library
+#include <stdio.h>
 #include "game.h"
 
 extern Game game;
 
-
-void gl_error(void)
-{
-  GLenum errCode;
-  const GLubyte *errString;
-
-  if ((errCode = glGetError()) != GL_NO_ERROR) {
-    errString = gluErrorString(errCode);
-    fprintf (stderr, "OpenGL Error: %s\n", errString);
-  }
-}
 
 void gl_printlog(GLuint obj)
 {
@@ -42,268 +27,160 @@ void gl_printlog(GLuint obj)
     printf("%s\n",infoLog);
 }
 
-
-void gl_buildshaders(Game *game)
+void gl_error(void)
 {
-  const char *shape_vertex_source = 
-    "uniform vec2 scale;                                              \n"
-    "uniform vec2 origin;                                             \n" 
-    "void main()                                                      \n"
-    "{                                                                \n"
-    "  // Transforming The Vertex                                     \n"
-    "  gl_Position.x = (origin.x-gl_Vertex.x)*scale.x;                \n"
-    "  gl_Position.y = (origin.y-gl_Vertex.y)*scale.y;                \n"
-    "}                                                                \n";
-  
-  const char *shape_fragment_source = 
-    "void main()                                                      \n"
-    "{                                                                \n"
-    "  // Setting Each Pixel To Red                                   \n"
-    "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);                       \n"
-    "}                                                                \n";
+  GLenum errCode;
+  const GLubyte *errString;
 
-  GLuint shape_program;
-  GLuint shape_vertex_shader;
-  GLuint shape_fragment_shader;
-
-  shape_vertex_shader   = glCreateShader(GL_VERTEX_SHADER);
-  glShaderSource(shape_vertex_shader, 1, &shape_vertex_source, NULL);
-  glCompileShader(shape_vertex_shader);
-  gl_printlog(shape_vertex_shader);
-  
-  shape_fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(shape_fragment_shader, 1, &shape_fragment_source, NULL);
-  glCompileShader(shape_fragment_shader);
-  gl_printlog(shape_fragment_shader);
-
-  shape_program = glCreateProgram();
-  glAttachShader(shape_program, shape_vertex_shader); 
-  glAttachShader(shape_program, shape_fragment_shader); 
-  
-  glLinkProgram(shape_program);
-  
-  glUseProgram(shape_program);
-
-
-  game->gl.shape.scale_loc = glGetUniformLocation(shape_program, "scale"); 
-  game->gl.shape.origin_loc = glGetUniformLocation(shape_program, "origin"); 
-  printf("-- %d --\n",game->gl.shape.origin_loc);
-}
-
-void gl_drawprimitiveship(GameObject *ship)
-{
-  double px = ship->object.position.x;
-  double py = ship->object.position.y;
-  glColor3f(.8f, .8f, .8f); // Blue
-  glVertex2f((px)-1.f, (py)-1.25f);
-  glVertex2f((px)+1.f, (py)-1.25f);
-  glVertex2f((px),       (py)+1.25f);
-}
-
-void gl_drawprimitiveplanet(GameObject *planet)
-{
-  glColor3f(1.0f, 1.0f, .5f); // bright pale yellow
-  glVertex2f((planet->object.position.x)-2.0f, (planet->object.position.y)-2.5f);
-  glVertex2f((planet->object.position.x)+2.0f, (planet->object.position.y)-2.5f);
-  glVertex2f((planet->object.position.x),       (planet->object.position.y)+2.5f);
-}
-
-void gl_drawshape(Shape *shape)
-{
-  glVertexPointer(2, GL_DOUBLE, sizeof(Vertex), &shape->vertices[0].location.x);
-  glDrawArrays(GL_LINE_LOOP,0,shape->numpoints);
-}
-    
-void handle_gravity(LeafData *data, void *arg)
-{
-  GameObject *a = (GameObject *)data->data;
-  GameObject *b = (GameObject *)arg;
-  do_gravity_once(a,b);
-}
-
-
-void game_tick(void)
-{
-  for(int i=0; i<1000; i++){
-    float oldx = game.asteroids[i].object.position.x;
-    float oldy = game.asteroids[i].object.position.y;
-    
-    // do all asteroid-asteroid gravity here
-    maptonearby(&game.qtree,
-                &handle_gravity,
-                &game.asteroids[i],
-                oldx, oldy,
-                15.0);
-     
-    do_gravity(&game.asteroids[i],&game.planet[0]);
-    do_gravity(&game.asteroids[i],&game.planet[1]);
-    do_gravity(&game.asteroids[i],&game.planet[2]);
-    do_gravity(&game.asteroids[i],&game.planet[3]);
-    
-    do_move(&game.asteroids[i]);
-    movepoint(&game.qtree,
-              oldx,oldy,
-              game.asteroids[i].object.position.x,
-              game.asteroids[i].object.position.y,
-              &game.asteroids[i]);
-    
+  if ((errCode = glGetError()) != GL_NO_ERROR) {
+    errString = gluErrorString(errCode);
+    fprintf (stderr, "OpenGL Error: %s\n", errString);
   }
-
-
-
-  for(int i=0; i<4; i++){
-    for(int j=i+1; j<4; j++){
-      do_gravity(&game.planet[i],&game.planet[j]);
-    }
-  }
-
-  do_move(&game.planet[0]);
-  do_move(&game.planet[1]);
-  do_move(&game.planet[2]);
-  do_move(&game.planet[3]);
 }
 
+GLFWwindow *gl_init(int argc,char *argv[]) {
+  // start GL context and O/S window using the GLFW helper library
+  if (!glfwInit ()) {
+    fprintf (stderr, "ERROR: could not start GLFW3\n");
+    return 1;
+  } 
 
-void gl_display(void)
-{
-  static int counter = 0;
-  glClear(GL_COLOR_BUFFER_BIT);
-
-  glBegin(GL_TRIANGLES);          // Each set of 3 vertices form a triangle
+  // uncomment these lines if on Apple OS X
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 2);
+  glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   
-
-  for(int i=0; i<1000; i++) {
-    gl_drawprimitiveship(&game.asteroids[i]);
-  }
-  
-  gl_drawprimitiveplanet(&game.planet[0]);
-  gl_drawprimitiveplanet(&game.planet[1]);
-  gl_drawprimitiveplanet(&game.planet[2]);
-  gl_drawprimitiveplanet(&game.planet[3]);
-  
-  glEnd();
-
-  
-  game.asteroid->rotation += 5;
-
-  game.gl.shape.originx = game.planet[1].object.position.x;
-  game.gl.shape.originy = game.planet[1].object.position.y;
-  
-
-  glUniform2f(game.gl.shape.scale_loc,
-              game.gl.shape.scalex,
-              game.gl.shape.scaley);
-  
-  glUniform2f(game.gl.shape.origin_loc,
-              game.gl.shape.originx,
-              game.gl.shape.originy);
-
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_COLOR_ARRAY);
-  gl_drawshape(game.asteroid);
-  gl_drawshape(game.ship);
-
-  glFlush();
-
-}
-
-GLFWwindow *gl_init(int argc, char *argv[])
-{
-  GLFWwindow* window;
-
-  /* Initialize the library */
-  if (!glfwInit())
-    return NULL;
- 
   GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-  const GLFWvidmode *vidmode = glfwGetVideoMode(monitor);
-
-  /* Create a windowed mode window and its OpenGL context */
-  window = glfwCreateWindow(vidmode->width, vidmode->height, "Hello World", monitor, NULL);
-  if (!window)
-  {
+  const GLFWvidmode *vidmode = glfwGetVideoMode(monitor); 
+  GLFWwindow *window = glfwCreateWindow(vidmode->width, vidmode->height, "Hello World", monitor, NULL);
+  if (!window) {
+    fprintf (stderr, "ERROR: could not open window with GLFW3\n");
     glfwTerminate();
-    return NULL;
+    return 1;
   }
+  glfwMakeContextCurrent (window);
+                                  
 
-  /* Make the window's context current */
-  glfwMakeContextCurrent(window);
- 
-  gl_buildshaders(&game);
-  
-  game.gl.shape.scalex = 1.0/(500.0 * ((float)vidmode->width / (float)vidmode->height));
-  game.gl.shape.scaley = 1.0/(500.0);
-  
-  game.gl.shape.scalex *= 4.0;
-  game.gl.shape.scaley *= 4.0;
+  // get version info
+  const GLubyte* renderer = glGetString (GL_RENDERER); // get renderer string
+  const GLubyte* version = glGetString (GL_VERSION); // version as a string
+  printf ("Renderer: %s\n", renderer);
+  printf ("OpenGL version supported %s\n", version);
 
-  game.gl.shape.originx = 0.0;
-  game.gl.shape.originy = 100.0;
-  return window;
+  // tell GL to only draw onto a pixel if the shape is closer to the viewer
+  glEnable (GL_DEPTH_TEST); // enable depth-testing
+  glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
+
+  /* OTHER STUFF GOES HERE NEXT */
+
+
+float points[] = {
+   0.0f,  0.5f,
+   0.5f, -0.5f,
+  -0.5f, -0.5f
+};
+
+game.gl.vbo = 0;
+glGenBuffers (1, &game.gl.vbo);
+glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
+glBufferData (GL_ARRAY_BUFFER, 6 * sizeof (float), points, GL_STATIC_DRAW);
+
+game.gl.vao = 0;
+glGenVertexArrays (1, &game.gl.vao);
+glBindVertexArray (game.gl.vao);
+glEnableVertexAttribArray (0);
+glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
+glVertexAttribPointer (0, 2, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL);
+
+return window;
+}
+
+
+
+void gl_buildshaders(void)
+{
+
+
+  const char* vertex_shader =
+  "#version 400\n"
+  "in vec2 vp;"
+  "uniform vec2 origin;"
+  "uniform vec2 scale;"
+  "void main () {"
+  "  gl_Position = vec4 ((origin.x-vp.x)*scale.x,"
+  "                      (origin.y-vp.y)*scale.y,"
+  "                      0.0,"
+  "                      1.0);"
+  "}";
+
+  const char* fragment_shader =
+  "#version 400\n"
+  "out vec4 frag_colour;"
+  "void main () {"
+  "  frag_colour = vec4 (0.5, 0.0, 0.5, 1.0);"
+  "}";
+
+  GLuint vs = glCreateShader (GL_VERTEX_SHADER);
+  glShaderSource (vs, 1, &vertex_shader, NULL);
+  glCompileShader (vs);
+  gl_printlog(vs);
+
+  GLuint fs = glCreateShader (GL_FRAGMENT_SHADER);
+  glShaderSource (fs, 1, &fragment_shader, NULL);
+  glCompileShader (fs);
+  gl_printlog(fs);
+
+  GLuint shape_program = glCreateProgram ();
+  glAttachShader (shape_program, fs);
+  glAttachShader (shape_program, vs);
+  glLinkProgram (shape_program);
+
+  game.gl.shape.program      = shape_program;
+  game.gl.shape.origin_loc   = glGetUniformLocation(shape_program, "origin"); 
+  game.gl.shape.scale_loc   = glGetUniformLocation(shape_program, "scale"); 
 }
 
 void game_loop(GLFWwindow *window)
 {
-  /* Loop until the user closes the window */
-  bool stop = false;
-  while ((!stop) &&(!glfwWindowShouldClose(window))) {
+  while (!glfwWindowShouldClose (window)) {
+    // wipe the drawing surface clear
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram (game.gl.shape.program);
+
+    game.gl.shape.originx = 0.5;    
+    game.gl.shape.originy = 0.0;    
+    game.gl.shape.scalex  = 0.5;
+    game.gl.shape.scaley  = 0.5;
+
+    glUniform2f(game.gl.shape.origin_loc,
+                game.gl.shape.originx,
+                game.gl.shape.originy);
     
-    // update positions.
-    game_tick();
+    glUniform2f(game.gl.shape.scale_loc,
+                game.gl.shape.scalex,
+                game.gl.shape.scaley);
 
-    // draw
-    gl_display();
-
-    // do double buffering... 
-    glfwSwapBuffers(window);
-
-    /* Poll for and process events */
-    glfwPollEvents();
-
+    glBindVertexArray (game.gl.vao);
+    // draw points 0-3 from the currently bound VAO with current in-use shader
+    glDrawArrays (GL_TRIANGLES, 0, 3);
+    // update other events like input handling 
+    glfwPollEvents ();
+    // put the stuff we've been drawing onto the display
+    glfwSwapBuffers (window);
+    
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-      stop = true;
+      break;
     }
-
-
   }
-
+  // close GL context and any other GLFW resources
   glfwTerminate();
 }
 
-/*
-void gl_init(int argc, char *argv[]) // Called before main loop to set up the program
-{
-  glutInit(&argc, argv); // Initializes glut
-
-  // Sets up a double buffer with RGBA components and a depth component
-  //glutInitDisplayMode(GLUT_DOUBLE | GLUT_DEPTH | GLUT_RGBA);
-
-  // Sets the window size to 512*512 square pixels
-  glutInitWindowSize(512, 512);
-
-  // Sets the window position to the upper left
-  glutInitWindowPosition(0, 0);
-
-  // Creates a window using internal glut functionality
-  glutCreateWindow("Hello!");
-  // passes reshape and display functions to the OpenGL machine for callback
-  glutDisplayFunc(gl_display);
-  glutIdleFunc(gl_idle);
 
 
-  glClearColor(0.0, 0.0, 0.0, 0.0);
-  //glEnable(GL_DEPTH_TEST);
-  glShadeModel(GL_SMOOTH);
-  glEnable(GL_BLEND); 
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable( GL_LINE_SMOOTH );
-  glEnable( GL_POLYGON_SMOOTH );
-  glEnable(GL_POINT_SMOOTH);
-  glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
-  glHint( GL_POLYGON_SMOOTH_HINT, GL_NICEST );
 
-  // Starts the program.
-  glutMainLoop();
-}
-*/
 
+
+
+  

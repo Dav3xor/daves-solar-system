@@ -54,7 +54,7 @@ Shape *make_shape(Point *points, unsigned int numpoints)
   }
 
   Shape *shape = calloc(1, sizeof(Shape));
-
+  shape->startindex = game.numvertices;
   shape->numpoints = numpoints;
   shape->vertices = &game.vertices[game.numvertices];
 

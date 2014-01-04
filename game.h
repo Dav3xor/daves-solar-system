@@ -49,6 +49,7 @@ struct Vertex
 struct Shape
 {
   double        rotation;
+  unsigned int  startindex;
   unsigned int  numpoints;
   Vertex       *vertices;
 };
@@ -89,11 +90,16 @@ struct Game
   unsigned int numobjects;
   struct gl
   {
+    GLuint vao;
+    GLuint vbo;
+    
     struct shape
     {
       GLuint  program;
       GLuint  scale_loc;
       GLuint  origin_loc;
+      GLuint  position_loc;
+      GLuint  object_loc;
       GLfloat scalex;
       GLfloat scaley;
       GLfloat originx;
@@ -109,6 +115,7 @@ void do_move(GameObject *a);
 void print_location(GameObject *a);
 
 void gl_display(void);
+void gl_setvertices(void);
 GLFWwindow *gl_init(int argc, char *argv[]);
 void game_loop(GLFWwindow *window);
 

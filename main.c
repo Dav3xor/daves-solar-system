@@ -54,10 +54,12 @@ int main(int argc, char *argv[])
   game.planet[3].velocity.j = 0.0;
   game.planet[3].mass = 0.0001;
   
-  game.asteroid = poly_asteroid(6);  
-  game.ship = poly_ship();  
-  
-  
   GLFWwindow * window = gl_init(argc, argv);
+  gl_buildshaders();
+
+  //game.asteroid = poly_asteroid(6);  
+  //game.ship = poly_ship();  
+  //gl_setvertices();
+
   game_loop(window);
 }
