@@ -61,11 +61,11 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
   }
   glfwMakeContextCurrent (window);
                                   
-  game.origin.x = 0.5;    
-  game.origin.y = 0.0;    
-  game.scale.x  = (double)vidmode->height/(double)vidmode->width;
-  game.scale.y  = 1.0;
-
+  game.origin.x     = 0.5;    
+  game.origin.y     = 0.0;    
+  game.scale        = 1.0;
+  game.commanded_scale = 1.0;
+  game.aspect_ratio =  (double)vidmode->height/(double)vidmode->width;
   // get version info
   const GLubyte* renderer = glGetString (GL_RENDERER); // get renderer string
   const GLubyte* version = glGetString (GL_VERSION); // version as a string
@@ -164,14 +164,13 @@ void gl_setup_shape_shader(GLFWwindow * window)
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glUseProgram (game.gl.shape.program);
 
-
   glUniform2f(game.gl.shape.origin_loc,
               game.origin.x,
               game.origin.y);
   
   glUniform2f(game.gl.shape.scale_loc,
-              game.scale.x,
-              game.scale.y);
+              game.scale*game.aspect_ratio,
+              game.scale);
 
   glBindVertexArray (game.gl.vao);
 }
@@ -193,8 +192,15 @@ bool gl_handle_input(GLFWwindow *window)
 void game_loop(GLFWwindow *window)
 {
   bool running = true;
-  while(running) {
-    
+  unsigned int counter = 0;
+  while (running) {
+    counter++;
+    if (counter%100==0) {
+      game.commanded_scale = .5 + (float)(rand()%1000)/1000.0;
+      printf("cs = %f\n",game.commanded_scale);
+    }
+    game.scale = do_transition(game.scale,game.commanded_scale);
+
     gl_setup_shape_shader(window);
     gl_draw_shapes(&game);
 

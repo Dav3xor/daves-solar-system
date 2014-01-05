@@ -89,8 +89,9 @@ struct Game
   GameObject   gameobjects[MAX_OBJECTS];
   Object       objects[MAX_OBJECTS];
   unsigned int numobjects;
-  Point        scale;
-  Point        commanded_scale;
+  double       aspect_ratio;
+  double       scale;
+  double       commanded_scale;
   Point        origin;
   Point        commanded_origin;
 
@@ -111,6 +112,7 @@ struct Game
 };
 
 void do_gravity(GameObject *a, GameObject *b);
+double do_transition(const double current, const double commanded);
 void do_gravity_once(GameObject *a, GameObject *b);
 void do_move(GameObject *a);
 
