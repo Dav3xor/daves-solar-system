@@ -48,7 +48,7 @@ struct Vertex
 
 struct Shape
 {
-  double        rotation;
+  double        orientation;
   unsigned int  startindex;
   unsigned int  numpoints;
   Vertex       *vertices;
@@ -69,7 +69,7 @@ double  orientation;
 
 struct GameObject
 {
-  Object        object;
+  Object        *object;
   Shape         shape;
   Vector        velocity;
   double        mass;
@@ -86,8 +86,14 @@ struct Game
   Shape       *ship;
   Vertex       vertices[MAX_VERTICES];
   unsigned int numvertices;
+  GameObject   gameobjects[MAX_OBJECTS];
   Object       objects[MAX_OBJECTS];
   unsigned int numobjects;
+  Point        scale;
+  Point        commanded_scale;
+  Point        origin;
+  Point        commanded_origin;
+
   struct gl
   {
     GLuint vao;
@@ -100,10 +106,6 @@ struct Game
       GLuint  origin_loc;
       GLuint  position_loc;
       GLuint  object_loc;
-      GLfloat scalex;
-      GLfloat scaley;
-      GLfloat originx;
-      GLfloat originy;
     }shape;
   }gl;
 };
@@ -116,6 +118,8 @@ void print_location(GameObject *a);
 
 void gl_display(void);
 void gl_setvertices(void);
+void gl_buildshaders(Game *game);
+
 GLFWwindow *gl_init(int argc, char *argv[]);
 void game_loop(GLFWwindow *window);
 

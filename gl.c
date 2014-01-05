@@ -61,6 +61,10 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
   }
   glfwMakeContextCurrent (window);
                                   
+  game.origin.x = 0.5;    
+  game.origin.y = 0.0;    
+  game.scale.x  = (double)vidmode->height/(double)vidmode->width;
+  game.scale.y  = 1.0;
 
   // get version info
   const GLubyte* renderer = glGetString (GL_RENDERER); // get renderer string
@@ -105,7 +109,7 @@ return window;
 
 
 
-void gl_buildshaders(void)
+void gl_buildshaders(Game *game)
 {
 
 
@@ -143,48 +147,66 @@ void gl_buildshaders(void)
   glAttachShader (shape_program, vs);
   glLinkProgram (shape_program);
 
-  game.gl.shape.program      = shape_program;
-  game.gl.shape.origin_loc   = glGetUniformLocation(shape_program, "origin"); 
-  game.gl.shape.scale_loc   = glGetUniformLocation(shape_program, "scale"); 
+  game->gl.shape.program      = shape_program;
+  game->gl.shape.origin_loc   = glGetUniformLocation(shape_program, "origin"); 
+  game->gl.shape.scale_loc   = glGetUniformLocation(shape_program, "scale"); 
+}
+void gl_draw_shapes(const Game *game)
+{
+  for (int i=0; i<game->numobjects; i++) {
+    const GameObject *gobj = &game->gameobjects[i];
+    glDrawArrays(GL_LINE_LOOP,gobj->shape.startindex,gobj->shape.numpoints);
+  }
+}
+
+void gl_setup_shape_shader(GLFWwindow * window)
+{
+  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glUseProgram (game.gl.shape.program);
+
+
+  glUniform2f(game.gl.shape.origin_loc,
+              game.origin.x,
+              game.origin.y);
+  
+  glUniform2f(game.gl.shape.scale_loc,
+              game.scale.x,
+              game.scale.y);
+
+  glBindVertexArray (game.gl.vao);
+}
+
+bool gl_handle_input(GLFWwindow *window)
+{
+  glfwPollEvents ();
+  // put the stuff we've been drawing onto the display
+  glfwSwapBuffers (window);
+  
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    // close GL context and any other GLFW resources
+    glfwTerminate();
+    return false;
+  }
+  return true;
 }
 
 void game_loop(GLFWwindow *window)
 {
-  while (!glfwWindowShouldClose (window)) {
-    // wipe the drawing surface clear
-    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glUseProgram (game.gl.shape.program);
-
-    game.gl.shape.originx = 0.5;    
-    game.gl.shape.originy = 0.0;    
-    game.gl.shape.scalex  = 0.5;
-    game.gl.shape.scaley  = 0.5;
-
-    glUniform2f(game.gl.shape.origin_loc,
-                game.gl.shape.originx,
-                game.gl.shape.originy);
+  bool running = true;
+  while(running) {
     
-    glUniform2f(game.gl.shape.scale_loc,
-                game.gl.shape.scalex,
-                game.gl.shape.scaley);
+    gl_setup_shape_shader(window);
+    gl_draw_shapes(&game);
 
-    glBindVertexArray (game.gl.vao);
-    // draw points 0-3 from the currently bound VAO with current in-use shader
-    glDrawArrays (GL_LINE_LOOP, 0, game.numvertices);
-    // update other events like input handling 
-    glfwPollEvents ();
-    // put the stuff we've been drawing onto the display
-    glfwSwapBuffers (window);
-    
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-      break;
+    if (glfwWindowShouldClose(window)) {
+      running = false;
+      printf("closing\n");
+    } else if (!gl_handle_input(window)) {
+      running = false;
+      printf("got escape\n");
     }
   }
-  // close GL context and any other GLFW resources
-  glfwTerminate();
 }
-
-
 
 
 
