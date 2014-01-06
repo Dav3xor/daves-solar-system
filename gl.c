@@ -200,6 +200,8 @@ void game_loop(GLFWwindow *window)
       printf("cs = %f\n",game.commanded_scale);
     }
     game.scale = do_transition(game.scale,game.commanded_scale);
+    game.origin.x = do_transition(game.origin.x,game.commanded_origin.x);
+    game.origin.y = do_transition(game.origin.y,game.commanded_origin.y);
 
     gl_setup_shape_shader(window);
     gl_draw_shapes(&game);

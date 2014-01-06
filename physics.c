@@ -36,7 +36,7 @@ void do_gravity(GameObject *a, GameObject *b)
 
 double do_transition(const double current, const double commanded)
 {
-  return current + ((commanded-current)/32.0);
+  return current + ((commanded-current)/12.0);
 }
 
 static inline double vector_magnitude(Vector *v)
