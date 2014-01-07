@@ -9,7 +9,6 @@ void poly_regular(unsigned int numsides, double distance, Point *points)
   }
 }
 
-
 unsigned int poly_bumpify(Point *a, Point *b, unsigned int numsides)
 {
   int i,j;
@@ -90,6 +89,15 @@ Shape *poly_ship(void)
   points[3].y = -2.5;
  
   return make_shape(points,4);
+}
+
+Shape *poly_triangle(double size)
+{
+  Point points[3];
+
+  poly_regular(3, size, points);
+  
+  return make_shape(points,3);
 }
 
 Shape *poly_asteroid(unsigned int seed) 

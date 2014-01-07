@@ -8,8 +8,8 @@
 #define PI 3.14159
 #define TAU 2*PI
 
-#define MAX_OBJECTS 100
-#define MAX_VERTICES 1000
+#define MAX_OBJECTS 1200
+#define MAX_VERTICES 5000
 
 /*
 information to render each object:
@@ -123,9 +123,10 @@ void gl_setvertices(void);
 void gl_buildshaders(Game *game);
 
 GLFWwindow *gl_init(int argc, char *argv[]);
-void game_loop(GLFWwindow *window);
+void   game_loop(GLFWwindow *window);
 
 void   poly_regular(unsigned int numsides, double distance, Point *points);
+Shape *poly_triangle(double size);
 Shape *poly_asteroid(unsigned int seed);
 Shape *poly_ship(void);
 
