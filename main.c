@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
   for(int i=0; i<1000; i++){
     poly_asteroid(i);
   }
-  
+  /* 
   game.planet[0].object->position.x = 0.0;
   game.planet[0].object->position.y = 0.0;
   game.planet[0].velocity.i = 0.0;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   game.planet[3].velocity.i = 0.0;
   game.planet[3].velocity.j = 0.0;
   game.planet[3].mass = 0.0001;
-  
+  */ 
   //game.asteroid = poly_asteroid(6);  
   //poly_asteroid(7);
   //game.ship = poly_ship();  
