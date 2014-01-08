@@ -9,7 +9,7 @@
 #define TAU 2*PI
 
 #define MAX_OBJECTS 1200
-#define MAX_VERTICES 5000
+#define MAX_VERTICES 100000
 
 /*
 information to render each object:

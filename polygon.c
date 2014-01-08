@@ -69,7 +69,7 @@ GameObject *make_shape(Point *points, unsigned int numpoints)
 
   game.numobjects++;
 
-  return shape;
+  return gobject;
 }
 
 GameObject *poly_ship(void)
@@ -142,6 +142,7 @@ GameObject *poly_asteroid(unsigned int seed)
            gobject->object->position.x,
            gobject->object->position.y,
            gobject);
+  return gobject;
 }
 
 
