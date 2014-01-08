@@ -46,13 +46,13 @@ unsigned int poly_bumpify(Point *a, Point *b, unsigned int numsides)
   return j; 
 }
 
-Shape *make_shape(Point *points, unsigned int numpoints)
+GameObject *make_shape(Point *points, unsigned int numpoints)
 {
   if ((game.numvertices+1 > MAX_VERTICES)||(game.numobjects+1 > MAX_OBJECTS)){
     return NULL;
   }
-
-  Shape *shape = &game.gameobjects[game.numobjects].shape;  
+  GameObject *gobject = &game.gameobjects[game.numobjects];
+  Shape *shape = &gobject->shape;  
   shape->startindex = game.numvertices;
   shape->numpoints = numpoints;
   shape->vertices = &game.vertices[game.numvertices];
@@ -72,7 +72,7 @@ Shape *make_shape(Point *points, unsigned int numpoints)
   return shape;
 }
 
-Shape *poly_ship(void)
+GameObject *poly_ship(void)
 {
   Point points[4];
   
@@ -91,7 +91,7 @@ Shape *poly_ship(void)
   return make_shape(points,4);
 }
 
-Shape *poly_triangle(double size)
+GameObject *poly_triangle(double size)
 {
   Point points[3];
 
@@ -100,7 +100,7 @@ Shape *poly_triangle(double size)
   return make_shape(points,3);
 }
 
-Shape *poly_asteroid(unsigned int seed) 
+GameObject *poly_asteroid(unsigned int seed) 
 {
   Point a[100];
   Point b[100];
@@ -123,7 +123,25 @@ Shape *poly_asteroid(unsigned int seed)
 
   printf("numsides2 = %d\n",numsides);
   
-  return make_shape(b,numsides);
+  GameObject *gobject = make_shape(b,numsides);
+
+  double angle = (rand()%628)/100.0;
+  double distance = 300 + (rand()%10000)/50.0;
+  double speed = .15 + (rand()%1000)/10000.0;
+  if(rand()%2) {
+    angle += 3.14159;
+  }
+  gobject->object->position.x = sin(angle) * distance;
+  gobject->object->position.y = cos(angle) * distance;
+  
+  gobject->velocity.i = sin(angle+(3.14159/2.0))*speed;
+  gobject->velocity.j = cos(angle+(3.14159/2.0))*speed;
+  
+  gobject->mass = .00002 + (rand()%100)/1000000.0;
+  addpoint(&game.qtree, 
+           gobject->object->position.x,
+           gobject->object->position.y,
+           gobject);
 }
 
 

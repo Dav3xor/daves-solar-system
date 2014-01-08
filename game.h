@@ -126,9 +126,9 @@ GLFWwindow *gl_init(int argc, char *argv[]);
 void   game_loop(GLFWwindow *window);
 
 void   poly_regular(unsigned int numsides, double distance, Point *points);
-Shape *poly_triangle(double size);
-Shape *poly_asteroid(unsigned int seed);
-Shape *poly_ship(void);
+GameObject *poly_triangle(double size);
+GameObject *poly_asteroid(unsigned int seed);
+GameObject *poly_ship(void);
 
 
 
