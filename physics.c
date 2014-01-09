@@ -14,8 +14,8 @@ extern Game game;
 void do_gravity(GameObject *a, GameObject *b)
 { 
 
-  double dx       = a->object->position.x - b->object->position.x;
-  double dy       = a->object->position.y - b->object->position.y;
+  double dx       = a->position.x - b->position.x;
+  double dy       = a->position.y - b->position.y;
 
   double angle    = atan2(dy,dx);
   double distance = sqrt((dx*dx) + (dy*dy));
@@ -50,8 +50,8 @@ void do_gravity_once(GameObject *a, GameObject *b)
     return;
   }
 
-  double dx       = a->object->position.x - b->object->position.x;
-  double dy       = a->object->position.y - b->object->position.y;
+  double dx       = a->position.x - b->position.x;
+  double dy       = a->position.y - b->position.y;
 
   double angle    = atan2(dy,dx);
   double distance = sqrt((dx*dx) + (dy*dy));
@@ -74,9 +74,12 @@ void do_move(GameObject *a)
   static float avg=.2;
   #endif
 
-  a->object->position.x += a->velocity.i;
-  a->object->position.y += a->velocity.j;
-  
+  a->position.x += a->velocity.i;
+  a->position.y += a->velocity.j;
+
+  a->obj_attr->x = a->position.x;  
+  a->obj_attr->y = a->position.y;  
+
   #ifdef TEST_LORENTZ
   double magnitude = vector_magnitude(&a->velocity);
   if (magnitude < min) {

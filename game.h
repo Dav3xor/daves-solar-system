@@ -25,13 +25,13 @@ color
 information per object:
 
 */
-typedef struct Point      Point;
-typedef struct Vertex     Vertex;
-typedef struct Shape      Shape;
-typedef struct Vector     Vector;
-typedef struct GameObject GameObject;
-typedef struct Object     Object;
-typedef struct Game       Game;
+typedef struct Point       Point;
+typedef struct Vertex      Vertex;
+typedef struct Shape       Shape;
+typedef struct Vector      Vector;
+typedef struct GameObject  GameObject;
+typedef struct Object_Attr Object_Attr;
+typedef struct Game        Game;
 
 struct Point
 {
@@ -41,7 +41,7 @@ struct Point
 
 struct Vertex
 {
-  Point location;
+  Point        location;
   unsigned int object;
 };
 
@@ -61,16 +61,18 @@ struct Vector
   double j;
 };
 
-struct Object
+struct Object_Attr
 {
-Point   position;
-double  orientation;
+float x;
+float y;
+float orientation;
 };
 
 struct GameObject
 {
-  Object        *object;
+  Object_Attr  *obj_attr;
   Shape         shape;
+  Point         position;
   Vector        velocity;
   double        mass;
   unsigned int  flags;
@@ -87,7 +89,7 @@ struct Game
   Vertex       vertices[MAX_VERTICES];
   unsigned int numvertices;
   GameObject   gameobjects[MAX_OBJECTS];
-  Object       objects[MAX_OBJECTS];
+  Object_Attr  objects[MAX_OBJECTS];
   unsigned int numobjects;
   double       aspect_ratio;
   double       scale;

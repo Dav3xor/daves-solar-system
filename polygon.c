@@ -53,7 +53,7 @@ GameObject *make_object(Point *points, unsigned int numpoints)
     return NULL;
   }
   GameObject *gobject = &game.gameobjects[game.numobjects];
-  gobject->object = &game.objects[game.numobjects];
+  gobject->obj_attr = &game.objects[game.numobjects];
 
   Shape *shape = &gobject->shape;  
   shape->startindex = game.numvertices;
@@ -66,8 +66,8 @@ GameObject *make_object(Point *points, unsigned int numpoints)
     game.vertices[game.numvertices].object     = game.numobjects;
     game.numvertices++;
   }
-  game.objects[game.numobjects].position.x = 0;
-  game.objects[game.numobjects].position.y = 0;
+  gobject->position.x = 0;
+  gobject->position.y = 0;
   game.objects[game.numobjects].orientation = 0;
 
   game.numobjects++;
@@ -130,16 +130,16 @@ GameObject *poly_asteroid(unsigned int seed)
   if(rand()%2) {
     angle += 3.14159;
   }
-  gobject->object->position.x = sin(angle) * distance;
-  gobject->object->position.y = cos(angle) * distance;
+  gobject->position.x = sin(angle) * distance;
+  gobject->position.y = cos(angle) * distance;
   
   gobject->velocity.i = sin(angle+(3.14159/2.0))*speed;
   gobject->velocity.j = cos(angle+(3.14159/2.0))*speed;
   
   gobject->mass = .00002 + (rand()%100)/1000000.0;
   addpoint(&game.qtree, 
-           gobject->object->position.x,
-           gobject->object->position.y,
+           gobject->position.x,
+           gobject->position.y,
            gobject);
   return gobject;
 }
