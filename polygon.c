@@ -71,7 +71,6 @@ GameObject *make_object(Point *points, unsigned int numpoints)
   game.objects[game.numobjects].orientation = 0;
 
   game.numobjects++;
-  printf("%p\n",gobject);
   return gobject;
 }
 
@@ -112,7 +111,6 @@ GameObject *poly_asteroid(unsigned int seed)
 
   
   unsigned int numsides = 5 + (rand() % 5); 
-  printf("numsides = %d\n",numsides); 
   
   // put a regular polygon into a
   poly_regular(numsides, .2, a);
@@ -124,7 +122,6 @@ GameObject *poly_asteroid(unsigned int seed)
   numsides = poly_bumpify(b,a,numsides);
   numsides = poly_bumpify(a,b,numsides);
 
-  printf("numsides2 = %d\n",numsides);
   
   GameObject *gobject = make_object(b,numsides);
   double angle = (rand()%628)/100.0;
@@ -144,7 +141,6 @@ GameObject *poly_asteroid(unsigned int seed)
            gobject->object->position.x,
            gobject->object->position.y,
            gobject);
-  printf("6\n");
   return gobject;
 }
 

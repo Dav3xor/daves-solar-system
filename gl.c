@@ -88,10 +88,6 @@ double points[] = {
 game.gl.vbo = 0;
 glGenBuffers (1, &game.gl.vbo);
 glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
-printf("sizeof g.v = %d\n",sizeof(game.vertices));
-for(int i=0; i<game.numvertices; i++){
-  printf("(%f,%f)\n",game.vertices[i].location.x, game.vertices[i].location.y);
-}
 
 
 
@@ -101,8 +97,10 @@ game.gl.vao = 0;
 glGenVertexArrays (1, &game.gl.vao);
 glBindVertexArray (game.gl.vao);
 glEnableVertexAttribArray (0);
+glEnableVertexAttribArray (1);
 glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
 glVertexAttribPointer (0, 2, GL_DOUBLE, GL_FALSE, sizeof(Vertex), (GLubyte*)NULL);
+glVertexAttribPointer (1, 1, GL_UNSIGNED_INT,   GL_FALSE, sizeof(Vertex), (GLubyte*)NULL);
 
 return window;
 }
@@ -115,12 +113,13 @@ void gl_buildshaders(Game *game)
 
   const char* vertex_shader =
   "#version 400\n"
-  "in vec2 vp;"
+  "layout(location = 0)in vec2 position;"
+  "layout(location = 1)in int  index;"
   "uniform vec2 origin;"
   "uniform vec2 scale;"
   "void main () {"
-  "  gl_Position = vec4 ((origin.x-vp.x)*scale.x,"
-  "                      (origin.y-vp.y)*scale.y,"
+  "  gl_Position = vec4 ((origin.x-position.x)*scale.x,"
+  "                      (origin.y-position.y)*scale.y,"
   "                      0.0,"
   "                      1.0);"
   "}";
@@ -133,14 +132,14 @@ void gl_buildshaders(Game *game)
   "}";
 
   GLuint vs = glCreateShader (GL_VERTEX_SHADER);
-  glShaderSource (vs, 1, &vertex_shader, NULL);
+  glShaderSource  (vs, 1, &vertex_shader, NULL);
   glCompileShader (vs);
-  gl_printlog(vs);
+  gl_printlog     (vs);
 
   GLuint fs = glCreateShader (GL_FRAGMENT_SHADER);
-  glShaderSource (fs, 1, &fragment_shader, NULL);
+  glShaderSource  (fs, 1, &fragment_shader, NULL);
   glCompileShader (fs);
-  gl_printlog(fs);
+  gl_printlog     (fs);
 
   GLuint shape_program = glCreateProgram ();
   glAttachShader (shape_program, fs);
@@ -149,7 +148,7 @@ void gl_buildshaders(Game *game)
 
   game->gl.shape.program      = shape_program;
   game->gl.shape.origin_loc   = glGetUniformLocation(shape_program, "origin"); 
-  game->gl.shape.scale_loc   = glGetUniformLocation(shape_program, "scale"); 
+  game->gl.shape.scale_loc    = glGetUniformLocation(shape_program, "scale"); 
 }
 void gl_draw_shapes(const Game *game)
 {
@@ -197,7 +196,6 @@ void game_loop(GLFWwindow *window)
     counter++;
     if (counter%100==0) {
       game.commanded_scale = .5 + (float)(rand()%1000)/1000.0;
-      printf("cs = %f\n",game.commanded_scale);
     }
     game.scale = do_transition(game.scale,game.commanded_scale);
     game.origin.x = do_transition(game.origin.x,game.commanded_origin.x);
