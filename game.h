@@ -105,6 +105,7 @@ struct Game
       GLuint  program;
       GLuint  scale_loc;
       GLuint  origin_loc;
+      GLuint  attr_loc;
       GLuint  position_loc;
       GLuint  object_loc;
     }shape;

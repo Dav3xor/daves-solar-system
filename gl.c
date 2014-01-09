@@ -149,6 +149,7 @@ void gl_buildshaders(Game *game)
   game->gl.shape.program      = shape_program;
   game->gl.shape.origin_loc   = glGetUniformLocation(shape_program, "origin"); 
   game->gl.shape.scale_loc    = glGetUniformLocation(shape_program, "scale"); 
+  game->gl.shape.attr_loc    = glGetUniformLocation(shape_program, "attributes"); 
 }
 void gl_draw_shapes(const Game *game)
 {
