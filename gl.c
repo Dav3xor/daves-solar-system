@@ -119,8 +119,8 @@ void gl_buildshaders(Game *game)
   "uniform vec2 scale;"
   "uniform vec3 attributes["MAX_OBJECTS_STR"];"
   "void main () {"
-  "  float x = position.x+attributes[index][0];"//attributes[index][0];"
-  "  float y = position.y+attributes[index][1];"//+attributes[index][1];"
+  "  float x = (origin.x + position.x + attributes[index][0])*scale.x;"
+  "  float y = (origin.y + position.y + attributes[index][1])*scale.y;"
   "  gl_Position = vec4 (x," //(origin.x-attributes[index].x-position.x)*scale.x,"
   "                      y," //(origin.y-attributes[index].y-position.y)*scale.y,"
   "                      0.0,"
@@ -153,6 +153,8 @@ void gl_buildshaders(Game *game)
   game->gl.shape.origin_loc   = glGetUniformLocation(shape_program, "origin"); 
   game->gl.shape.scale_loc    = glGetUniformLocation(shape_program, "scale"); 
   game->gl.shape.attr_loc    =  glGetUniformLocation(shape_program, "attributes"); 
+  printf("origin = %d\n",game->gl.shape.origin_loc);
+  printf("scale = %d\n",game->gl.shape.scale_loc);
   printf("attr_loc = %d\n",game->gl.shape.attr_loc);
 }
 void gl_draw_shapes(const Game *game)
