@@ -61,15 +61,24 @@ GameObject *make_object(Point *points, unsigned int numpoints)
   shape->vertices = &game.vertices[game.numvertices];
 
   for (int i=0; i<numpoints; i++){
-    game.vertices[game.numvertices].location.x = points[i].x;
-    game.vertices[game.numvertices].location.y = points[i].y;
-    game.vertices[game.numvertices].object     = game.numobjects;
+    game.vertices[game.numvertices].position.x = points[i].x;
+    game.vertices[game.numvertices].position.y = points[i].y;
+    game.vertices[game.numvertices].obj_index  = game.numobjects;
+    printf("(%f,%f) - %d\n",game.vertices[game.numvertices].position.x,
+                            game.vertices[game.numvertices].position.y,
+                            game.vertices[game.numvertices].obj_index);
     game.numvertices++;
   }
   gobject->position.x = 0;
   gobject->position.y = 0;
-  game.objects[game.numobjects].orientation = 0;
-
+  game.objects[game.numobjects].orientation = 0.0;
+  game.objects[game.numobjects].x = -.5;
+  game.objects[game.numobjects].y = .1;
+  if(game.numobjects==1){
+    game.objects[game.numobjects].x = .5;
+  }
+  printf("(%f,%f)\n",game.objects[game.numobjects].x,
+                          game.objects[game.numobjects].y);
   game.numobjects++;
   return gobject;
 }
@@ -124,23 +133,25 @@ GameObject *poly_asteroid(unsigned int seed)
 
   
   GameObject *gobject = make_object(b,numsides);
-  double angle = (rand()%628)/100.0;
-  double distance = 300 + (rand()%10000)/50.0;
-  double speed = .15 + (rand()%1000)/10000.0;
-  if(rand()%2) {
-    angle += 3.14159;
+  if (gobject) {
+    double angle = (rand()%628)/100.0;
+    double distance = 300 + (rand()%10000)/50.0;
+    double speed = .15 + (rand()%1000)/10000.0;
+    if(rand()%2) {
+      angle += 3.14159;
+    }
+    gobject->position.x = sin(angle) * distance;
+    gobject->position.y = cos(angle) * distance;
+    
+    gobject->velocity.i = sin(angle+(3.14159/2.0))*speed;
+    gobject->velocity.j = cos(angle+(3.14159/2.0))*speed;
+    
+    gobject->mass = .00002 + (rand()%100)/1000000.0;
+    addpoint(&game.qtree, 
+             gobject->position.x,
+             gobject->position.y,
+             gobject);
   }
-  gobject->position.x = sin(angle) * distance;
-  gobject->position.y = cos(angle) * distance;
-  
-  gobject->velocity.i = sin(angle+(3.14159/2.0))*speed;
-  gobject->velocity.j = cos(angle+(3.14159/2.0))*speed;
-  
-  gobject->mass = .00002 + (rand()%100)/1000000.0;
-  addpoint(&game.qtree, 
-           gobject->position.x,
-           gobject->position.y,
-           gobject);
   return gobject;
 }
 

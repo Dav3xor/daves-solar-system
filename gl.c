@@ -87,20 +87,20 @@ double points[] = {
 
 game.gl.vbo = 0;
 glGenBuffers (1, &game.gl.vbo);
+
 glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
-
-
-
 glBufferData (GL_ARRAY_BUFFER, sizeof(game.vertices), &game.vertices[0], GL_STATIC_DRAW);
+printf("g.v = %d\n",sizeof(game.vertices));
 
 game.gl.vao = 0;
 glGenVertexArrays (1, &game.gl.vao);
 glBindVertexArray (game.gl.vao);
 glEnableVertexAttribArray (0);
 glEnableVertexAttribArray (1);
+
 glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
 glVertexAttribPointer (0, 2, GL_DOUBLE, GL_FALSE, sizeof(Vertex), (GLubyte*)NULL);
-glVertexAttribPointer (1, 1, GL_UNSIGNED_INT,   GL_FALSE, sizeof(Vertex), (GLubyte*)NULL);
+glVertexAttribPointer (1, 1, GL_UNSIGNED_INT,   GL_FALSE, sizeof(Vertex), sizeof(double)*2);
 
 return window;
 }
@@ -114,12 +114,15 @@ void gl_buildshaders(Game *game)
   const char* vertex_shader =
   "#version 400\n"
   "layout(location = 0)in vec2 position;"
-  "layout(location = 1)in int  index;"
+  "layout(location = 1)in uint index;"
   "uniform vec2 origin;"
   "uniform vec2 scale;"
+  "uniform vec3 attributes["MAX_OBJECTS_STR"];"
   "void main () {"
-  "  gl_Position = vec4 ((origin.x-position.x)*scale.x,"
-  "                      (origin.y-position.y)*scale.y,"
+  "  float x = position.x+attributes[index][0];"//attributes[index][0];"
+  "  float y = position.y+attributes[index][1];"//+attributes[index][1];"
+  "  gl_Position = vec4 (x," //(origin.x-attributes[index].x-position.x)*scale.x,"
+  "                      y," //(origin.y-attributes[index].y-position.y)*scale.y,"
   "                      0.0,"
   "                      1.0);"
   "}";
@@ -149,7 +152,8 @@ void gl_buildshaders(Game *game)
   game->gl.shape.program      = shape_program;
   game->gl.shape.origin_loc   = glGetUniformLocation(shape_program, "origin"); 
   game->gl.shape.scale_loc    = glGetUniformLocation(shape_program, "scale"); 
-  game->gl.shape.attr_loc    = glGetUniformLocation(shape_program, "attributes"); 
+  game->gl.shape.attr_loc    =  glGetUniformLocation(shape_program, "attributes"); 
+  printf("attr_loc = %d\n",game->gl.shape.attr_loc);
 }
 void gl_draw_shapes(const Game *game)
 {
@@ -171,7 +175,9 @@ void gl_setup_shape_shader(GLFWwindow * window)
   glUniform2f(game.gl.shape.scale_loc,
               game.scale*game.aspect_ratio,
               game.scale);
-
+  glUniform3fv(game.gl.shape.attr_loc,
+               MAX_OBJECTS,
+               (const GLfloat *)&game.objects[0]);
   glBindVertexArray (game.gl.vao);
 }
 

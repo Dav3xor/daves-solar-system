@@ -3,14 +3,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdint.h>
 #include "../pyquadtree/quadtree.h"
 
 #define PI 3.14159
 #define TAU 2*PI
 
-#define MAX_OBJECTS 1200
-#define MAX_VERTICES 100000
+#define MAX_OBJECTS 500 
+#define MAX_OBJECTS_STR "500"
 
+#define MAX_VERTICES 100000
 /*
 information to render each object:
 centerx
@@ -41,10 +43,9 @@ struct Point
 
 struct Vertex
 {
-  Point        location;
-  unsigned int object;
+  Point     position;
+  uint32_t  obj_index;
 };
-
 
 struct Shape
 {
@@ -66,7 +67,7 @@ struct Object_Attr
 float x;
 float y;
 float orientation;
-};
+} __attribute__ ((packed));
 
 struct GameObject
 {
@@ -82,8 +83,8 @@ struct GameObject
 struct Game
 {
   QuadTree     qtree;
-  GameObject   asteroids[1000];
-  GameObject   planet[4];
+  //GameObject   asteroids[1000];
+  //GameObject   planet[4];
   Shape       *asteroid;
   Shape       *ship;
   Vertex       vertices[MAX_VERTICES];
