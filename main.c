@@ -10,7 +10,7 @@ Game game;
 int main(int argc, char *argv[])
 {
   newtree(&game.qtree,3,7,(struct Extent){-1000,-1000,1000,1000});
-  for(int i=0; i<4; i++){
+  for(int i=0; i<40; i++){
     poly_asteroid(i);
   }
   /* 

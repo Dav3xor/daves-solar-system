@@ -64,21 +64,26 @@ GameObject *make_object(Point *points, unsigned int numpoints)
     game.vertices[game.numvertices].position.x = points[i].x;
     game.vertices[game.numvertices].position.y = points[i].y;
     game.vertices[game.numvertices].obj_index  = game.numobjects;
+    /*
     printf("(%f,%f) - %d\n",game.vertices[game.numvertices].position.x,
                             game.vertices[game.numvertices].position.y,
                             game.vertices[game.numvertices].obj_index);
+    */
     game.numvertices++;
   }
   gobject->position.x = 0;
   gobject->position.y = 0;
   game.objects[game.numobjects].orientation = 0.0;
-  game.objects[game.numobjects].x = -.5;
-  game.objects[game.numobjects].y = .1;
+  game.objects[game.numobjects].x = .1 + ((rand()%1000)*.0008);
+  game.objects[game.numobjects].y = .1 + ((rand()%1000)*.0008);
   if(game.numobjects==1){
     game.objects[game.numobjects].x = .5;
   }
-  printf("(%f,%f)\n",game.objects[game.numobjects].x,
-                          game.objects[game.numobjects].y);
+  /*
+  printf("(%f,%f) o = %f\n",game.objects[game.numobjects].x,
+                     game.objects[game.numobjects].y,
+                     game.objects[game.numobjects].orientation);
+  */
   game.numobjects++;
   return gobject;
 }

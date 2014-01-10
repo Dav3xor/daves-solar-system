@@ -79,30 +79,30 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
   /* OTHER STUFF GOES HERE NEXT */
 
 
-double points[] = {
-   0.0f,  0.5f,
-   0.5f, -0.5f,
-  -0.5f, -0.5f
-};
+  double points[] = {
+     0.0f,  0.5f,
+     0.5f, -0.5f,
+    -0.5f, -0.5f
+  };
 
-game.gl.vbo = 0;
-glGenBuffers (1, &game.gl.vbo);
+  game.gl.vbo = 0;
+  glGenBuffers (1, &game.gl.vbo);
 
-glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
-glBufferData (GL_ARRAY_BUFFER, sizeof(game.vertices), &game.vertices[0], GL_STATIC_DRAW);
-printf("g.v = %d\n",sizeof(game.vertices));
+  glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
+  glBufferData (GL_ARRAY_BUFFER, sizeof(game.vertices), &game.vertices[0], GL_STATIC_DRAW);
+  printf("g.v = %d\n",sizeof(game.vertices));
 
-game.gl.vao = 0;
-glGenVertexArrays (1, &game.gl.vao);
-glBindVertexArray (game.gl.vao);
-glEnableVertexAttribArray (0);
-glEnableVertexAttribArray (1);
+  game.gl.vao = 0;
+  glGenVertexArrays (1, &game.gl.vao);
+  glBindVertexArray (game.gl.vao);
+  glEnableVertexAttribArray (0);
+  glEnableVertexAttribArray (1);
 
-glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
-glVertexAttribPointer (0, 2, GL_DOUBLE, GL_FALSE, sizeof(Vertex), (GLubyte*)NULL);
-glVertexAttribPointer (1, 1, GL_UNSIGNED_INT,   GL_FALSE, sizeof(Vertex), sizeof(double)*2);
+  glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
+  glVertexAttribPointer  (0, 2, GL_DOUBLE,         GL_FALSE, sizeof(Vertex), 0);
+  glVertexAttribIPointer (1, 1, GL_UNSIGNED_INT,             sizeof(Vertex), sizeof(Point));
 
-return window;
+  return window;
 }
 
 
@@ -113,27 +113,28 @@ void gl_buildshaders(Game *game)
 
   const char* vertex_shader =
   "#version 400\n"
-  "layout(location = 0)in vec2 position;"
-  "layout(location = 1)in uint index;"
-  "uniform vec2 origin;"
-  "uniform vec2 scale;"
-  "uniform vec3 attributes["MAX_OBJECTS_STR"];"
-  "void main () {"
-  "  float x = (origin.x + position.x + attributes[index][0])*scale.x;"
-  "  float y = (origin.y + position.y + attributes[index][1])*scale.y;"
-  "  gl_Position = vec4 (x," //(origin.x-attributes[index].x-position.x)*scale.x,"
-  "                      y," //(origin.y-attributes[index].y-position.y)*scale.y,"
-  "                      0.0,"
-  "                      1.0);"
-  "}";
+  "layout(location = 0)in vec2 position;\n"
+  "layout(location = 1)in uint index;\n"
+  "uniform vec2 origin;\n"
+  "uniform vec2 scale;\n"
+  "uniform vec3 attributes["MAX_OBJECTS_STR"];\n"
+  "void main () {\n"
+  "  float x = (origin.x + position.x + attributes[index].x)*scale.x;\n"
+  "  float y = (origin.y + position.y + attributes[index].y)*scale.y;\n"
+  "  gl_Position = vec4 (x, y, 0.0, 1.0);\n"
+  "}\n";
 
   const char* fragment_shader =
   "#version 400\n"
-  "out vec4 frag_colour;"
-  "void main () {"
-  "  frag_colour = vec4 (0.5, 0.0, 0.5, 1.0);"
-  "}";
-
+  "out vec4 frag_colour;\n"
+  "void main () {\n"
+  "  frag_colour = vec4 (0.5, 0.0, 0.5, 1.0);\n"
+  "}\n";
+  printf("---\n");
+  printf(vertex_shader);
+  printf("---\n");
+  printf(fragment_shader);
+  printf("---\n");
   GLuint vs = glCreateShader (GL_VERTEX_SHADER);
   glShaderSource  (vs, 1, &vertex_shader, NULL);
   glCompileShader (vs);
