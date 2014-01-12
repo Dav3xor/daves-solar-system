@@ -124,8 +124,10 @@ void gl_buildshaders(Game *game)
   "uniform vec3 attributes["MAX_OBJECTS_STR"];\n"
   "uniform vec4 colors["MAX_SHAPE_COLORS_STR"];\n"
   "void main () {\n"
-  "  float x = (origin.x + position.x + attributes[index].x)*scale.x;\n"
-  "  float y = (origin.y + position.y + attributes[index].y)*scale.y;\n"
+  "  float cos_angle = cos(attributes[index].z);\n"
+  "  float sin_angle = sin(attributes[index].z);\n"
+  "  float x = (origin.x + (position.x*cos_angle - position.y*sin_angle) + attributes[index].x)*scale.x;\n"
+  "  float y = (origin.y + (position.x*sin_angle + position.y*cos_angle) + attributes[index].y)*scale.y;\n"
   "  gl_Position = vec4 (x, y, 0.0, 1.0);\n"
   "  vert_color = colors[color_index];"
   "}\n";
@@ -222,7 +224,7 @@ void game_loop(GLFWwindow *window)
     game.scale = do_transition(game.scale,game.commanded_scale);
     game.origin.x = do_transition(game.origin.x,game.commanded_origin.x);
     game.origin.y = do_transition(game.origin.y,game.commanded_origin.y);
-
+    game.objects[0].orientation += .001;
     gl_setup_shape_shader(window);
     gl_draw_shapes(&game);
 
