@@ -97,10 +97,12 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
   glBindVertexArray (game.gl.vao);
   glEnableVertexAttribArray (0);
   glEnableVertexAttribArray (1);
+  glEnableVertexAttribArray (2);
 
   glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
   glVertexAttribPointer  (0, 2, GL_DOUBLE,         GL_FALSE, sizeof(Vertex), 0);
   glVertexAttribIPointer (1, 1, GL_UNSIGNED_INT,             sizeof(Vertex), sizeof(Point));
+  glVertexAttribIPointer (2, 1, GL_UNSIGNED_INT,             sizeof(Vertex), sizeof(Point)+sizeof(uint32_t));
 
   return window;
 }
@@ -115,20 +117,25 @@ void gl_buildshaders(Game *game)
   "#version 400\n"
   "layout(location = 0)in vec2 position;\n"
   "layout(location = 1)in uint index;\n"
+  "layout(location = 2)in uint color_index;\n"
+  "out vec4 vert_color;\n"
   "uniform vec2 origin;\n"
   "uniform vec2 scale;\n"
   "uniform vec3 attributes["MAX_OBJECTS_STR"];\n"
+  "uniform vec4 colors["MAX_SHAPE_COLORS_STR"];\n"
   "void main () {\n"
   "  float x = (origin.x + position.x + attributes[index].x)*scale.x;\n"
   "  float y = (origin.y + position.y + attributes[index].y)*scale.y;\n"
   "  gl_Position = vec4 (x, y, 0.0, 1.0);\n"
+  "  vert_color = colors[color_index];"
   "}\n";
 
   const char* fragment_shader =
   "#version 400\n"
-  "out vec4 frag_colour;\n"
+  "in   vec4 vert_color;\n"
+  "out  vec4 frag_color;\n"
   "void main () {\n"
-  "  frag_colour = vec4 (0.5, 0.0, 0.5, 1.0);\n"
+  "  frag_color = vert_color;\n"
   "}\n";
   printf("---\n");
   printf(vertex_shader);
@@ -153,10 +160,12 @@ void gl_buildshaders(Game *game)
   game->gl.shape.program      = shape_program;
   game->gl.shape.origin_loc   = glGetUniformLocation(shape_program, "origin"); 
   game->gl.shape.scale_loc    = glGetUniformLocation(shape_program, "scale"); 
-  game->gl.shape.attr_loc    =  glGetUniformLocation(shape_program, "attributes"); 
+  game->gl.shape.attr_loc     =  glGetUniformLocation(shape_program, "attributes"); 
+  game->gl.shape.colors_loc   =  glGetUniformLocation(shape_program, "colors"); 
   printf("origin = %d\n",game->gl.shape.origin_loc);
   printf("scale = %d\n",game->gl.shape.scale_loc);
   printf("attr_loc = %d\n",game->gl.shape.attr_loc);
+  printf("colors_loc = %d\n",game->gl.shape.colors_loc);
 }
 void gl_draw_shapes(const Game *game)
 {
@@ -181,6 +190,9 @@ void gl_setup_shape_shader(GLFWwindow * window)
   glUniform3fv(game.gl.shape.attr_loc,
                MAX_OBJECTS,
                (const GLfloat *)&game.objects[0]);
+  glUniform4fv(game.gl.shape.colors_loc,
+               MAX_SHAPE_COLORS,
+               (const GLfloat *)&shape_colors[0][0]);
   glBindVertexArray (game.gl.vao);
 }
 

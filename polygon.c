@@ -64,6 +64,7 @@ GameObject *make_object(Point *points, unsigned int numpoints)
     game.vertices[game.numvertices].position.x = points[i].x;
     game.vertices[game.numvertices].position.y = points[i].y;
     game.vertices[game.numvertices].obj_index  = game.numobjects;
+    game.vertices[game.numvertices].color_index  = game.numobjects%5;
     /*
     printf("(%f,%f) - %d\n",game.vertices[game.numvertices].position.x,
                             game.vertices[game.numvertices].position.y,

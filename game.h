@@ -12,6 +12,9 @@
 #define MAX_OBJECTS 500 
 #define MAX_OBJECTS_STR "500"
 
+#define MAX_SHAPE_COLORS 5
+#define MAX_SHAPE_COLORS_STR "5"
+
 #define MAX_VERTICES 100000
 /*
 information to render each object:
@@ -45,6 +48,7 @@ struct Vertex
 {
   Point     position;
   uint32_t  obj_index;
+  uint32_t  color_index;
 };
 
 struct Shape
@@ -79,6 +83,12 @@ struct GameObject
   unsigned int  flags;
 };
 
+static float shape_colors[MAX_SHAPE_COLORS][4] = 
+{ {1.0, 1.0, 1.0, 1.0},     // white
+  { .5,  .5,  .5, 1.0},     // gray
+  { .5,  .5, 1.0, 1.0},     // blue
+  {1.0,  .5,  .5, 1.0},     // red
+  { .5, 1.0,  .5, 1.0} };
 
 struct Game
 {
@@ -109,6 +119,7 @@ struct Game
       GLuint  scale_loc;
       GLuint  origin_loc;
       GLuint  attr_loc;
+      GLuint  colors_loc;
       GLuint  position_loc;
       GLuint  object_loc;
     }shape;
