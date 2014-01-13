@@ -94,16 +94,16 @@ GameObject *poly_ship(void)
   Point points[4];
   
   points[0].x = 0.0;
-  points[0].y = 2.5;
+  points[0].y = .025;
   
-  points[1].x = 1.5;
-  points[1].y = -2.5;
+  points[1].x = .015;
+  points[1].y = -.025;
   
   points[2].x = 0.0;
-  points[2].y = -1.5;
+  points[2].y = -.015;
   
-  points[3].x = -1.5;
-  points[3].y = -2.5;
+  points[3].x = -.015;
+  points[3].y = -.025;
  
   return make_object(points,4);
 }
