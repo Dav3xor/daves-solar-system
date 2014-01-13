@@ -209,6 +209,12 @@ bool gl_handle_input(GLFWwindow *window)
     glfwTerminate();
     return false;
   }
+  if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+    game.objects[0].orientation += .05;
+  }
+  if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+    game.objects[0].orientation -= .05;
+  }
   return true;
 }
 
@@ -224,7 +230,6 @@ void game_loop(GLFWwindow *window)
     game.scale = do_transition(game.scale,game.commanded_scale);
     game.origin.x = do_transition(game.origin.x,game.commanded_origin.x);
     game.origin.y = do_transition(game.origin.y,game.commanded_origin.y);
-    game.objects[0].orientation += .001;
     gl_setup_shape_shader(window);
     gl_draw_shapes(&game);
 
