@@ -130,6 +130,7 @@ void do_gravity(GameObject *a, GameObject *b);
 double do_transition(const double current, const double commanded);
 void do_gravity_once(GameObject *a, GameObject *b);
 void do_move(GameObject *a);
+void do_thrust(GameObject *go);
 
 void print_location(GameObject *a);
 

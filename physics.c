@@ -11,6 +11,13 @@ extern Game game;
 
 // appr logistic:
 // 1/(1+math.e**(-((v*8.0)-10.0)))
+
+void do_thrust(GameObject *go)
+{
+  go->velocity.i += cos(go->obj_attr->orientation)*.0001;   
+  go->velocity.j += sin(go->obj_attr->orientation)*.0001;   
+}
+
 void do_gravity(GameObject *a, GameObject *b)
 { 
 

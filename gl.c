@@ -215,6 +215,9 @@ bool gl_handle_input(GLFWwindow *window)
   if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
     game.objects[0].orientation -= .05;
   }
+  if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    do_thrust(&game.gameobjects[0]);
+  }
   return true;
 }
 
@@ -227,6 +230,10 @@ void game_loop(GLFWwindow *window)
     if (counter%100==0) {
       game.commanded_scale = .5 + (float)(rand()%1000)/1000.0;
     }
+
+    do_move(&game.gameobjects[0]);
+
+
     game.scale = do_transition(game.scale,game.commanded_scale);
     game.origin.x = do_transition(game.origin.x,game.commanded_origin.x);
     game.origin.y = do_transition(game.origin.y,game.commanded_origin.y);
