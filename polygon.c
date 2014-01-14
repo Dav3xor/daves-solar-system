@@ -48,7 +48,8 @@ unsigned int poly_bumpify(Point *a, Point *b, unsigned int numsides)
 
 GameObject *make_object(Point *points, unsigned int numpoints)
 {
-  if ((game.numvertices+numpoints > MAX_VERTICES)||(game.numobjects+1 > MAX_OBJECTS)){
+  if ((game.numvertices+numpoints > MAX_VERTICES)||
+      (game.numobjects+1 > MAX_OBJECTS)) {
     printf("ERROR: out of vertices\n");
     return NULL;
   }
@@ -57,6 +58,7 @@ GameObject *make_object(Point *points, unsigned int numpoints)
 
   Shape *shape = &gobject->shape;  
   shape->startindex = game.numvertices;
+  shape->flags      = SHAPE_FLAG_LINELOOP;
   shape->numpoints = numpoints;
   shape->vertices = &game.vertices[game.numvertices];
 

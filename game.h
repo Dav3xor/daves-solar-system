@@ -16,6 +16,10 @@
 #define MAX_SHAPE_COLORS_STR "5"
 
 #define MAX_VERTICES 100000
+
+#define SHAPE_FLAG_SKIP         1
+#define SHAPE_FLAG_LINELOOP     2 
+#define SHAPE_FLAG_TRIANGLES    4 
 /*
 information to render each object:
 centerx
@@ -56,6 +60,7 @@ struct Shape
   double        orientation;
   unsigned int  startindex;
   unsigned int  numpoints;
+  unsigned int  flags;
   Vertex       *vertices;
 };
 
