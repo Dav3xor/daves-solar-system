@@ -173,14 +173,17 @@ void gl_draw_shapes(const Game *game)
 {
   for (int i=0; i<game->numobjects; i++) {
     const GameObject *gobj = &game->gameobjects[i];
-    if (gobj->shape.flags&SHAPE_FLAG_SKIP) {
-      continue;
-    }
-    if (gobj->shape.flags&SHAPE_FLAG_LINELOOP) {
-      glDrawArrays(GL_LINE_LOOP,gobj->shape.startindex,gobj->shape.numpoints);
-    }
-    if (gobj->shape.flags&SHAPE_FLAG_TRIANGLES) {
-      glDrawArrays(GL_TRIANGLES,gobj->shape.startindex,gobj->shape.numpoints);
+    Shape *curshape = gobj->shapes;
+    while(curshape) {
+      if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
+        if (curshape->flags&SHAPE_FLAG_LINELOOP) {
+          glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
+        }
+        if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
+          glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
+        }
+      }
+      curshape = curshape->next;
     }
   }
 }

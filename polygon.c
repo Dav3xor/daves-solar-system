@@ -46,34 +46,41 @@ unsigned int poly_bumpify(Point *a, Point *b, unsigned int numsides)
   return j; 
 }
 
-GameObject *make_object(Point *points, unsigned int numpoints)
+GameObject *make_object(Shape *shapes, Point *points)
 {
-  if ((game.numvertices+numpoints > MAX_VERTICES)||
-      (game.numobjects+1 > MAX_OBJECTS)) {
-    printf("ERROR: out of vertices\n");
-    return NULL;
-  }
   GameObject *gobject = &game.gameobjects[game.numobjects];
   gobject->obj_attr = &game.objects[game.numobjects];
-
-  Shape *shape = &gobject->shape;  
-  shape->startindex = game.numvertices;
-  shape->flags      = SHAPE_FLAG_LINELOOP;
-  shape->numpoints = numpoints;
-  shape->vertices = &game.vertices[game.numvertices];
-
-  for (int i=0; i<numpoints; i++){
-    game.vertices[game.numvertices].position.x = points[i].x;
-    game.vertices[game.numvertices].position.y = points[i].y;
-    game.vertices[game.numvertices].obj_index  = game.numobjects;
-    game.vertices[game.numvertices].color_index  = game.numobjects%5;
-    /*
-    printf("(%f,%f) - %d\n",game.vertices[game.numvertices].position.x,
-                            game.vertices[game.numvertices].position.y,
-                            game.vertices[game.numvertices].obj_index);
-    */
-    game.numvertices++;
+  if(game.numobjects+1 > MAX_OBJECTS) {
+    printf("ERROR: out of game objects\n");
+    return NULL;
   }
+  unsigned int startpoint = 0;
+  Shape *shape = &shapes[0];
+  while(shape) {
+    if ((game.numvertices+shape->numpoints > MAX_VERTICES)) {
+      printf("ERROR: out of vertices\n");
+      return NULL;
+    }
+    shape->startindex = game.numvertices;
+    shape->vertices = &game.vertices[game.numvertices];
+    
+    for (int i=startpoint; i<startpoint+shape->numpoints; i++){
+      game.vertices[game.numvertices].position.x = points[i].x;
+      game.vertices[game.numvertices].position.y = points[i].y;
+      game.vertices[game.numvertices].obj_index  = game.numobjects;
+      game.vertices[game.numvertices].color_index  = game.numobjects%5;
+      /*
+      printf("(%f,%f) - %d\n",game.vertices[game.numvertices].position.x,
+                              game.vertices[game.numvertices].position.y,
+                              game.vertices[game.numvertices].obj_index);
+      */
+      game.numvertices++;
+    }
+    startpoint += shape->numpoints; 
+    shape = shape->next;
+  }
+  
+  gobject->shapes = shapes;
   gobject->position.x = 0;
   gobject->position.y = 0;
   game.objects[game.numobjects].orientation = 0.0;
@@ -93,7 +100,17 @@ GameObject *make_object(Point *points, unsigned int numpoints)
 
 GameObject *poly_ship(void)
 {
-  Point points[4];
+  // TODO: replace with static shape array...
+  Shape *shapes = malloc(sizeof(Shape)*2);
+  shapes[0].flags      = SHAPE_FLAG_LINELOOP;
+  shapes[0].numpoints  = 4;
+  shapes[0].next       = &shapes[1];
+  
+  shapes[1].flags      = SHAPE_FLAG_TRIANGLES;
+  shapes[1].numpoints  = 3;
+  shapes[1].next       = NULL;
+  
+  Point points[7];
   
   points[0].x = .025;
   points[0].y = 0.0;
@@ -106,8 +123,17 @@ GameObject *poly_ship(void)
   
   points[3].x = -.025;
   points[3].y = -.015;
+
+  points[4].x = -.030;
+  points[4].y = -.006;
+
+  points[5].x = -.030;
+  points[5].y =  .006;
+
+  points[6].x = -.050;
+  points[6].y = 0.0;
  
-  return make_object(points,4);
+  return make_object(shapes, points);
 }
 
 GameObject *poly_triangle(double size)
@@ -116,7 +142,13 @@ GameObject *poly_triangle(double size)
 
   poly_regular(3, size, points);
   
-  return make_object(points,3);
+  // TODO: replace with static shape array...
+  Shape *shape = malloc(sizeof(Shape));
+  shape[0].flags      = SHAPE_FLAG_TRIANGLES;
+  shape[0].numpoints  = 3;
+  shape[0].next       = NULL;
+  
+  return make_object(shape,points);
 }
 
 GameObject *poly_asteroid(unsigned int seed) 
@@ -139,8 +171,13 @@ GameObject *poly_asteroid(unsigned int seed)
   numsides = poly_bumpify(b,a,numsides);
   numsides = poly_bumpify(a,b,numsides);
 
+  // TODO: replace with static shape array...
+  Shape *shape = malloc(sizeof(Shape));
+  shape[0].flags      = SHAPE_FLAG_LINELOOP;
+  shape[0].numpoints  = numsides;
+  shape[0].next       = NULL;
   
-  GameObject *gobject = make_object(b,numsides);
+  GameObject *gobject = make_object(shape,b);
   if (gobject) {
     double angle = (rand()%628)/100.0;
     double distance = 300 + (rand()%10000)/50.0;

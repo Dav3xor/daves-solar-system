@@ -2,11 +2,8 @@
 #include "game.h"
 
 Game game;
-/*
-  = { 
-  {{0,NULL}, {0.0,0.0},   {0,0}, 0, 100.0, 0},
-  {{0,NULL}, {50.0,0.0}, {0,1.8}, 0, 10.0,    0} };
-*/
+
+
 int main(int argc, char *argv[])
 {
   newtree(&game.qtree,3,7,(struct Extent){-1000,-1000,1000,1000});

@@ -57,11 +57,11 @@ struct Vertex
 
 struct Shape
 {
-  double        orientation;
   unsigned int  startindex;
   unsigned int  numpoints;
   unsigned int  flags;
   Vertex       *vertices;
+  Shape        *next;
 };
 
 
@@ -81,7 +81,7 @@ float orientation;
 struct GameObject
 {
   Object_Attr  *obj_attr;
-  Shape         shape;
+  Shape         *shapes;
   Point         position;
   Vector        velocity;
   double        mass;
