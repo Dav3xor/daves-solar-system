@@ -171,10 +171,11 @@ void gl_buildshaders(Game *game)
 }
 void gl_draw_shapes(const Game *game)
 {
+  unsigned int shapeindex = 0;
   for (int i=0; i<game->numobjects; i++) {
     const GameObject *gobj = &game->gameobjects[i];
-    Shape *curshape = gobj->shapes;
-    while(curshape) {
+    for (int j=0; j<gobj->numshapes; j++) {
+      Shape *curshape = &gobj->shapes[shapeindex];
       if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
         if (curshape->flags&SHAPE_FLAG_LINELOOP) {
           glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
@@ -183,7 +184,7 @@ void gl_draw_shapes(const Game *game)
           glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
         }
       }
-      curshape = curshape->next;
+      shapeindex++;
     }
   }
 }

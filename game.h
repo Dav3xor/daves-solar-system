@@ -9,6 +9,7 @@
 #define PI 3.14159
 #define TAU 2*PI
 
+#define MAX_SHAPES  2500
 #define MAX_OBJECTS 500 
 #define MAX_OBJECTS_STR "500"
 
@@ -61,7 +62,6 @@ struct Shape
   unsigned int  numpoints;
   unsigned int  flags;
   Vertex       *vertices;
-  Shape        *next;
 };
 
 
@@ -85,6 +85,7 @@ struct GameObject
   Point         position;
   Vector        velocity;
   double        mass;
+  unsigned int  numshapes;
   unsigned int  flags;
 };
 
@@ -98,14 +99,12 @@ static float shape_colors[MAX_SHAPE_COLORS][4] =
 struct Game
 {
   QuadTree     qtree;
-  //GameObject   asteroids[1000];
-  //GameObject   planet[4];
-  Shape       *asteroid;
-  Shape       *ship;
   Vertex       vertices[MAX_VERTICES];
   unsigned int numvertices;
+  Shape        shapes[MAX_SHAPES];
   GameObject   gameobjects[MAX_OBJECTS];
   Object_Attr  objects[MAX_OBJECTS];
+  unsigned int numshapes;
   unsigned int numobjects;
   double       aspect_ratio;
   double       scale;
