@@ -230,6 +230,12 @@ bool gl_handle_input(GLFWwindow *window)
   if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
     do_thrust(&game.gameobjects[0]);
   }
+  if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
+    game.commanded_scale *= 1.2;
+  }
+  if (glfwGetKey(window, GLFW_KEY_MINUS) == GLFW_PRESS) {
+    game.commanded_scale /= 1.2;
+  }
   return true;
 }
 
@@ -239,9 +245,6 @@ void game_loop(GLFWwindow *window)
   unsigned int counter = 0;
   while (running) {
     counter++;
-    if (counter%100==0) {
-      game.commanded_scale = .5 + (float)(rand()%1000)/1000.0;
-    }
 
     do_move(&game.gameobjects[0]);
 
