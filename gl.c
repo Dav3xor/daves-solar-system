@@ -172,19 +172,25 @@ void gl_buildshaders(Game *game)
 void gl_draw_shapes(const Game *game)
 {
   unsigned int shapeindex = 0;
+  Shape *curshape = &gobj->shapes[shapeindex];
   for (int i=0; i<game->numobjects; i++) {
     const GameObject *gobj = &game->gameobjects[i];
     for (int j=0; j<gobj->numshapes; j++) {
-      Shape *curshape = &gobj->shapes[shapeindex];
+      printf("i=%d j=%d shapeindex=%d\n",i,j,shapeindex);
+      //Shape *curshape = &gobj->shapes[shapeindex];
+      printf("1");
       if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
+        printf("2");
         if (curshape->flags&SHAPE_FLAG_LINELOOP) {
+          printf("3 %d si=%d np=%d\n",shapeindex,curshape->startindex, curshape->numpoints);
           glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
-        }
-        if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
+        } else if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
+          printf("4 si=%d np=%d",curshape->startindex, curshape->numpoints);
           glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
         }
       }
-      shapeindex++;
+      printf("\n");
+      //shapeindex++;
     }
   }
 }

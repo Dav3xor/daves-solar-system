@@ -7,10 +7,12 @@ Game game;
 int main(int argc, char *argv[])
 {
   newtree(&game.qtree,3,7,(struct Extent){-1000,-1000,1000,1000});
-  poly_ship();
-  for(int i=0; i<40; i++){
+  //poly_ship();
+  //poly_planet(50.0);
+  for(int i=0; i<8; i++){
     poly_asteroid(i);
   }
+  printshapes();
   /* 
   game.planet[0].object->position.x = 0.0;
   game.planet[0].object->position.y = 0.0;

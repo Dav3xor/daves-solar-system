@@ -46,12 +46,29 @@ unsigned int poly_bumpify(Point *a, Point *b, unsigned int numsides)
   return j; 
 }
 
+void printshapes(void)
+{
+  printf("shapes:\n");
+  for(int i=0; i<game.numshapes; i++) {
+    Shape *shape = &game.shapes[i];
+    printf("%d %d %d %d %p\n",
+           i,
+           shape->startindex,
+           shape->numpoints,
+           shape->flags,
+           shape->vertices);
+  }
+  printf("endshapes:\n");
+}
+           
 GameObject *make_object(Point *points, Shape *shapes, unsigned int numshapes)
 {
+  static double blah = 0.0;
   if(game.numobjects+1 > MAX_OBJECTS) {
     printf("ERROR: out of game objects\n");
     return NULL;
   }
+
   if(game.numshapes+numshapes > MAX_SHAPES) {
     printf("ERROR: out of shapes\n");
     return NULL;
@@ -93,8 +110,9 @@ GameObject *make_object(Point *points, Shape *shapes, unsigned int numshapes)
   gobject->position.x = 0;
   gobject->position.y = 0;
   game.objects[game.numobjects].orientation = 0.0;
-  game.objects[game.numobjects].x = .1 + ((rand()%1000)*.0008);
-  game.objects[game.numobjects].y = .1 + ((rand()%1000)*.0008);
+  game.objects[game.numobjects].x = blah;//.1 + ((rand()%1000)*.0008);
+  game.objects[game.numobjects].y = 0.0;//.1 + ((rand()%1000)*.0008);
+  blah += .2;
   if(game.numobjects==1){
     game.objects[game.numobjects].x = .5;
   }
@@ -109,7 +127,6 @@ GameObject *make_object(Point *points, Shape *shapes, unsigned int numshapes)
 
 GameObject *poly_ship(void)
 {
-  // TODO: replace with static shape array...
   Shape shapes[2];
   shapes[0].flags      = SHAPE_FLAG_LINELOOP;
   shapes[0].numpoints  = 4;
@@ -149,7 +166,6 @@ GameObject *poly_triangle(double size)
 
   poly_regular(3, size, points);
   
-  // TODO: replace with static shape array...
   Shape shape;
   shape.flags      = SHAPE_FLAG_TRIANGLES;
   shape.numpoints  = 3;
@@ -157,6 +173,32 @@ GameObject *poly_triangle(double size)
   return make_object(points,&shape,1);
 }
 
+GameObject *poly_planet(double size)
+{
+  const double numpoints = 80; 
+  Point points[100];
+  poly_regular(numpoints, size, points);
+  
+  Shape shape;
+  shape.flags      = SHAPE_FLAG_LINELOOP;
+  shape.numpoints  = numpoints;
+  
+  GameObject *gobject = make_object(points,&shape,1);
+  if (gobject) {
+    gobject->position.x = 0.0;
+    gobject->position.y = 0.0;
+    
+    gobject->velocity.i = 0.0;
+    gobject->velocity.j = 0.0;
+    
+    gobject->mass = 1.0;
+    addpoint(&game.qtree, 
+             gobject->position.x,
+             gobject->position.y,
+             gobject);
+  }
+  return gobject;
+}
 GameObject *poly_asteroid(unsigned int seed) 
 {
   Point a[100];
@@ -177,7 +219,6 @@ GameObject *poly_asteroid(unsigned int seed)
   numsides = poly_bumpify(b,a,numsides);
   numsides = poly_bumpify(a,b,numsides);
 
-  // TODO: replace with static shape array...
   Shape shape;
   shape.flags      = SHAPE_FLAG_LINELOOP;
   shape.numpoints  = numsides;
