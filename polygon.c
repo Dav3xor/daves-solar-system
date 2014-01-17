@@ -136,25 +136,25 @@ GameObject *poly_ship(void)
   
   Point points[7];
   
-  points[0].x = .025;
+  points[0].x = .0025;
   points[0].y = 0.0;
   
-  points[1].x = -.025;
-  points[1].y = .015;
+  points[1].x = -.0025;
+  points[1].y = .0015;
   
-  points[2].x = -.015;
+  points[2].x = -.0015;
   points[2].y = 0.0;
   
-  points[3].x = -.025;
-  points[3].y = -.015;
+  points[3].x = -.0025;
+  points[3].y = -.0015;
 
-  points[4].x = -.030;
-  points[4].y = -.006;
+  points[4].x = -.0030;
+  points[4].y = -.0006;
 
-  points[5].x = -.030;
-  points[5].y =  .006;
+  points[5].x = -.0030;
+  points[5].y =  .0006;
 
-  points[6].x = -.050;
+  points[6].x = -.0050;
   points[6].y = 0.0;
  
   return make_object(points, &shapes[0], 2);
@@ -173,7 +173,9 @@ GameObject *poly_triangle(double size)
   return make_object(points,&shape,1);
 }
 
-GameObject *poly_planet(double size)
+GameObject *poly_planet(double size, double mass,
+                        Point position, 
+                        Vector velocity)
 {
   const double numpoints = 80; 
   Point points[100];
@@ -185,13 +187,10 @@ GameObject *poly_planet(double size)
   
   GameObject *gobject = make_object(points,&shape,1);
   if (gobject) {
-    gobject->position.x = 0.0;
-    gobject->position.y = 0.0;
+    gobject->position = position;
+    gobject->velocity = velocity;
     
-    gobject->velocity.i = 0.0;
-    gobject->velocity.j = 0.0;
-    
-    gobject->mass = 1.0;
+    gobject->mass = mass;
     addpoint(&game.qtree, 
              gobject->position.x,
              gobject->position.y,
@@ -210,7 +209,7 @@ GameObject *poly_asteroid(unsigned int seed)
   unsigned int numsides = 5 + (rand() % 5); 
   
   // put a regular polygon into a
-  poly_regular(numsides, .2, a);
+  poly_regular(numsides, .04, a);
 
   // bumpify the regular polygon
   numsides = poly_bumpify(a,b,numsides);

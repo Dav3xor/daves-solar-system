@@ -6,9 +6,11 @@ Game game;
 
 int main(int argc, char *argv[])
 {
-  newtree(&game.qtree,3,7,(struct Extent){-1000,-1000,1000,1000});
+  newtree(&game.qtree,3,7,(struct Extent) {-1000,-1000,1000,1000});
   poly_ship();
-  poly_planet(50.0);
+  poly_planet(50.0, 10.0,
+              (struct Point) {0.0, 0.0},
+              (struct Vector) {0.0, 0.0});
   for(int i=0; i<8; i++){
     poly_asteroid(i);
   }
