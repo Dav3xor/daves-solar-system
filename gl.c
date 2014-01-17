@@ -171,21 +171,32 @@ void gl_buildshaders(Game *game)
 }
 void gl_draw_shapes(const Game *game)
 {
-  unsigned int shapeindex = 0;
-  Shape *curshape = &gobj->shapes[shapeindex];
+  printf("(%f,%f) - (%f,%f)\n",
+        game->gameobjects[0].position.x,
+        game->gameobjects[0].position.y,
+        game->objects[0].x,
+        game->objects[0].y);
+  for (int i=0; i<game->numshapes; i++) {
+    Shape *curshape = &game->shapes[i];
+    if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
+      if (curshape->flags&SHAPE_FLAG_LINELOOP) {
+        glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
+      } else if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
+        glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
+      }
+    }
+  }
+}
+/*
   for (int i=0; i<game->numobjects; i++) {
     const GameObject *gobj = &game->gameobjects[i];
+
     for (int j=0; j<gobj->numshapes; j++) {
-      printf("i=%d j=%d shapeindex=%d\n",i,j,shapeindex);
-      //Shape *curshape = &gobj->shapes[shapeindex];
-      printf("1");
+      Shape *curshape = &game->shapes[shapeindex];
       if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
-        printf("2");
         if (curshape->flags&SHAPE_FLAG_LINELOOP) {
-          printf("3 %d si=%d np=%d\n",shapeindex,curshape->startindex, curshape->numpoints);
           glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
         } else if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
-          printf("4 si=%d np=%d",curshape->startindex, curshape->numpoints);
           glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
         }
       }
@@ -194,7 +205,7 @@ void gl_draw_shapes(const Game *game)
     }
   }
 }
-
+*/
 void gl_setup_shape_shader(GLFWwindow * window)
 {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -255,9 +266,12 @@ void game_loop(GLFWwindow *window)
     do_move(&game.gameobjects[0]);
 
 
-    game.scale = do_transition(game.scale,game.commanded_scale);
+
+    // move camera
+    game.scale    = do_transition(game.scale,game.commanded_scale);
     game.origin.x = do_transition(game.origin.x,game.commanded_origin.x);
     game.origin.y = do_transition(game.origin.y,game.commanded_origin.y);
+    
     gl_setup_shape_shader(window);
     gl_draw_shapes(&game);
 
