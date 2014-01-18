@@ -76,9 +76,7 @@ GameObject *make_object(Point *points, Shape *shapes, unsigned int numshapes)
   
   GameObject *gobject = &game.gameobjects[game.numobjects];
   gobject->obj_attr = &game.objects[game.numobjects];
-  if((game.numobjects) && (!(game.numobjects%MAX_OBJ_PER_PASS))){
-    game.switchover[(game.numobjects/MAX_OBJ_PER_PASS)-1] = game.numshapes;
-  }
+   
   
   Shape *startshape = &game.shapes[game.numshapes];
   unsigned int startpoint = 0;
@@ -127,6 +125,13 @@ GameObject *make_object(Point *points, Shape *shapes, unsigned int numshapes)
                      game.objects[game.numobjects].orientation);
   */
   game.numobjects++;
+  
+  if((game.numobjects) && (game.numobjects%MAX_OBJ_PER_PASS == 0)){
+    unsigned int position = (game.numobjects/MAX_OBJ_PER_PASS) - 1;
+    printf("seeting switchover: %d, %d\n",position,game.numshapes); 
+    game.switchover[position] = game.numshapes;
+  }
+
   return gobject;
 }
 

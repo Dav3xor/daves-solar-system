@@ -169,55 +169,51 @@ void gl_buildshaders(Game *game)
   printf("attr_loc = %d\n",game->gl.shape.attr_loc);
   printf("colors_loc = %d\n",game->gl.shape.colors_loc);
 }
+
+static const void gl_draw_shape_block(const Game *game,
+                                      unsigned int block, 
+                                      unsigned int start, 
+                                      unsigned int stop)
+{
+  glUniform3fv(game->gl.shape.attr_loc,
+               MAX_OBJ_PER_PASS,
+               (const GLfloat *)&game->objects[block*MAX_OBJ_PER_PASS]);
+  
+  for (unsigned int i=start; i<stop; i++) {
+    const Shape *curshape = &game->shapes[i];
+    if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
+      if (curshape->flags&SHAPE_FLAG_LINELOOP) {
+        glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
+      } else if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
+        glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
+      }
+    }
+  }
+}
+
 void gl_draw_shapes(const Game *game)
 {
-  unsigned int numswitchovers = game->numobjects/MAX_OBJ_PER_PASS + 1;
-  unsigned int j=0;
+  unsigned int numswitchovers = game->numobjects/MAX_OBJ_PER_PASS;
+  /*
+  for(int i = 0; i< numswitchovers; i++){
+    printf("xx %d %d\n",i,game->switchover[i]);
+  }
+  */
+  unsigned int i=0;
   unsigned int start = 0;
   unsigned int stop  = 0;
-  for(unsigned int j=0; j<numswitchovers; j++) {
-    if(j==numswitchovers-1){
-      stop = game->numshapes;
-    } else {
-      stop = game->switchover[j];
-    }
-      
-    glUniform3fv(game->gl.shape.attr_loc,
-                 MAX_OBJ_PER_PASS,
-                 (const GLfloat *)&game->objects[j*MAX_OBJ_PER_PASS]);
-    
-    for (unsigned int i=start; i<stop; i++) {
-      Shape *curshape = &game->shapes[i];
-      if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
-        if (curshape->flags&SHAPE_FLAG_LINELOOP) {
-          glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
-        } else if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
-          glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
-        }
-      }
-    }
+  for(i=0; i<numswitchovers; i++) {
+    stop = game->switchover[i];
+    //printf("switchover: %d %d %d\n",i,start,stop);
+    gl_draw_shape_block(game,i,start,stop); 
     start = stop;
   }
-}
-/*
-  for (int i=0; i<game->numobjects; i++) {
-    const GameObject *gobj = &game->gameobjects[i];
-
-    for (int j=0; j<gobj->numshapes; j++) {
-      Shape *curshape = &game->shapes[shapeindex];
-      if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
-        if (curshape->flags&SHAPE_FLAG_LINELOOP) {
-          glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
-        } else if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
-          glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
-        }
-      }
-      printf("\n");
-      //shapeindex++;
-    }
+  if(stop != game->numshapes) {
+    //printf("leftover: %d %d %d\n",i,start,game->numshapes);
+    gl_draw_shape_block(game,i,start,game->numshapes);
   }
 }
-*/
+
 void gl_setup_shape_shader(GLFWwindow * window)
 {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

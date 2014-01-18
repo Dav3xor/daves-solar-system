@@ -11,10 +11,11 @@ int main(int argc, char *argv[])
   poly_planet(50.0, 10.0,
               (struct Point) {0.0, 0.0},
               (struct Vector) {0.0, 0.0});
-  for(int i=0; i<8; i++){
+  for(int i=0; i<500; i++){
     poly_asteroid(i);
   }
-  printshapes();
+  //printshapes();
+
   /* 
   game.planet[0].object->position.x = 0.0;
   game.planet[0].object->position.y = 0.0;
