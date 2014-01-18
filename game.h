@@ -12,6 +12,7 @@
 #define MAX_SHAPES  2500
 #define MAX_OBJECTS 500 
 #define MAX_OBJECTS_STR "500"
+#define MAX_OBJ_PER_PASS 5 
 
 #define MAX_SHAPE_COLORS 5
 #define MAX_SHAPE_COLORS_STR "5"
@@ -105,6 +106,7 @@ struct Game
   GameObject   gameobjects[MAX_OBJECTS];
   Object_Attr  objects[MAX_OBJECTS];
   unsigned int numshapes;
+  unsigned int switchover[100];
   unsigned int numobjects;
   double       aspect_ratio;
   double       scale;

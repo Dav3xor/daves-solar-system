@@ -171,20 +171,32 @@ void gl_buildshaders(Game *game)
 }
 void gl_draw_shapes(const Game *game)
 {
-  printf("(%f,%f) - (%f,%f)\n",
-        game->gameobjects[0].position.x,
-        game->gameobjects[0].position.y,
-        game->objects[0].x,
-        game->objects[0].y);
-  for (int i=0; i<game->numshapes; i++) {
-    Shape *curshape = &game->shapes[i];
-    if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
-      if (curshape->flags&SHAPE_FLAG_LINELOOP) {
-        glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
-      } else if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
-        glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
+  unsigned int numswitchovers = game->numobjects/MAX_OBJ_PER_PASS + 1;
+  unsigned int j=0;
+  unsigned int start = 0;
+  unsigned int stop  = 0;
+  for(unsigned int j=0; j<numswitchovers; j++) {
+    if(j==numswitchovers-1){
+      stop = game->numshapes;
+    } else {
+      stop = game->switchover[j];
+    }
+      
+    glUniform3fv(game->gl.shape.attr_loc,
+                 MAX_OBJ_PER_PASS,
+                 (const GLfloat *)&game->objects[j*MAX_OBJ_PER_PASS]);
+    
+    for (unsigned int i=start; i<stop; i++) {
+      Shape *curshape = &game->shapes[i];
+      if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
+        if (curshape->flags&SHAPE_FLAG_LINELOOP) {
+          glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
+        } else if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
+          glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
+        }
       }
     }
+    start = stop;
   }
 }
 /*
@@ -218,9 +230,6 @@ void gl_setup_shape_shader(GLFWwindow * window)
   glUniform2f(game.gl.shape.scale_loc,
               game.scale*game.aspect_ratio,
               game.scale);
-  glUniform3fv(game.gl.shape.attr_loc,
-               MAX_OBJECTS,
-               (const GLfloat *)&game.objects[0]);
   glUniform4fv(game.gl.shape.colors_loc,
                MAX_SHAPE_COLORS,
                (const GLfloat *)&shape_colors[0][0]);

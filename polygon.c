@@ -76,9 +76,14 @@ GameObject *make_object(Point *points, Shape *shapes, unsigned int numshapes)
   
   GameObject *gobject = &game.gameobjects[game.numobjects];
   gobject->obj_attr = &game.objects[game.numobjects];
+  if((game.numobjects) && (!(game.numobjects%MAX_OBJ_PER_PASS))){
+    game.switchover[(game.numobjects/MAX_OBJ_PER_PASS)-1] = game.numshapes;
+  }
   
   Shape *startshape = &game.shapes[game.numshapes];
   unsigned int startpoint = 0;
+  unsigned int objposition = game.numobjects%MAX_OBJ_PER_PASS;
+
   for(int i=0; i<numshapes; i++) {
     Shape *shape = &shapes[i];
     if ((game.numvertices+shape->numpoints > MAX_VERTICES)) {
@@ -89,9 +94,9 @@ GameObject *make_object(Point *points, Shape *shapes, unsigned int numshapes)
     shape->vertices = &game.vertices[game.numvertices];
     
     for (int i=startpoint; i<startpoint+shape->numpoints; i++){
-      game.vertices[game.numvertices].position.x = points[i].x;
-      game.vertices[game.numvertices].position.y = points[i].y;
-      game.vertices[game.numvertices].obj_index  = game.numobjects;
+      game.vertices[game.numvertices].position.x   = points[i].x;
+      game.vertices[game.numvertices].position.y   = points[i].y;
+      game.vertices[game.numvertices].obj_index    = objposition;
       game.vertices[game.numvertices].color_index  = game.numobjects%5;
       /*
       printf("(%f,%f) - %d\n",game.vertices[game.numvertices].position.x,
