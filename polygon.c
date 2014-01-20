@@ -201,7 +201,7 @@ GameObject *poly_planet(double size, double mass,
     gobject->velocity = velocity;
     
     gobject->mass = mass;
-    addpoint(&game.qtree, 
+    pqt_addpoint(&game.qtree, 
              gobject->position.x,
              gobject->position.y,
              gobject);
@@ -247,7 +247,7 @@ GameObject *poly_asteroid(unsigned int seed)
     gobject->velocity.j = cos(angle+(3.14159/2.0))*speed;
     
     gobject->mass = .00002 + (rand()%100)/1000000.0;
-    addpoint(&game.qtree, 
+    pqt_addpoint(&game.qtree, 
              gobject->position.x,
              gobject->position.y,
              gobject);

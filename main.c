@@ -6,7 +6,7 @@ Game game;
 
 int main(int argc, char *argv[])
 {
-  newtree(&game.qtree,3,7,(struct Extent) {-1000,-1000,1000,1000});
+  pqt_newtree(&game.qtree,3,7,(struct pqt_Extent) {-1000,-1000,1000,1000});
   poly_ship();
   poly_planet(50.0, 10.0,
               (struct Point) {0.0, 0.0},

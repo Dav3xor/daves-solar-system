@@ -43,6 +43,8 @@ typedef struct Vector      Vector;
 typedef struct GameObject  GameObject;
 typedef struct Object_Attr Object_Attr;
 typedef struct Game        Game;
+typedef struct Extent       Extent;
+typedef struct PlayerShip  PlayerShip;
 
 struct Point
 {
@@ -90,30 +92,44 @@ struct GameObject
   unsigned int  flags;
 };
 
+struct Extent
+{
+  unsigned int begin;
+  unsigned int end;
+};
+
 static float shape_colors[MAX_SHAPE_COLORS][4] = 
 { {1.0, 1.0, 1.0, 1.0},     // white
   { .5,  .5,  .5, 1.0},     // gray
   { .5,  .5, 1.0, 1.0},     // blue
   {1.0,  .5,  .5, 1.0},     // red
   { .5, 1.0,  .5, 1.0} };
+struct PlayerShip
+{
+  GameObject   *ship;
+  unsigned int  flags;
+};
 
 struct Game
 {
-  QuadTree     qtree;
-  Vertex       vertices[MAX_VERTICES];
-  unsigned int numvertices;
-  Shape        shapes[MAX_SHAPES];
-  GameObject   gameobjects[MAX_OBJECTS];
-  Object_Attr  objects[MAX_OBJECTS];
-  unsigned int numshapes;
-  unsigned int switchover[100];
-  unsigned int numobjects;
-  double       aspect_ratio;
-  double       scale;
-  double       commanded_scale;
-  Point        origin;
-  Point        commanded_origin;
-
+  pqt_QuadTree     qtree;
+  Vertex           vertices[MAX_VERTICES];
+  unsigned int     numvertices;
+  Shape            shapes[MAX_SHAPES];
+  GameObject       gameobjects[MAX_OBJECTS];
+  Object_Attr      objects[MAX_OBJECTS];
+  unsigned int     numshapes;
+  unsigned int     switchover[100];
+  unsigned int     numobjects;
+  Extent           planet_extents;
+  Extent           asteroid_extents;
+  Extent           ship_extents;
+  double           aspect_ratio;
+  double           scale;
+  double           commanded_scale;
+  Point            origin;
+  Point            commanded_origin;
+  PlayerShip       playership;
   struct gl
   {
     GLuint vao;

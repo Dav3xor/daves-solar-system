@@ -46,6 +46,7 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
   } 
 
   // uncomment these lines if on Apple OS X
+  glfwWindowHint (GLFW_SAMPLES, 4);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 2);
   glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -74,6 +75,8 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
 
   // tell GL to only draw onto a pixel if the shape is closer to the viewer
   glEnable (GL_DEPTH_TEST); // enable depth-testing
+  glEnable (GL_LINE_SMOOTH);
+  glLineWidth (.8);
   glDepthFunc (GL_LESS); // depth-testing interprets a smaller value as "closer"
 
   /* OTHER STUFF GOES HERE NEXT */
