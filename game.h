@@ -22,28 +22,16 @@
 #define SHAPE_FLAG_SKIP         1
 #define SHAPE_FLAG_LINELOOP     2 
 #define SHAPE_FLAG_TRIANGLES    4 
-/*
-information to render each object:
-centerx
-centery
-angle
 
-information per vertex:
-x
-y
-color
-
-information per object:
-
-*/
 typedef struct Point       Point;
 typedef struct Vertex      Vertex;
 typedef struct Shape       Shape;
 typedef struct Vector      Vector;
 typedef struct GameObject  GameObject;
 typedef struct Object_Attr Object_Attr;
+typedef struct DrawList    DrawList;
 typedef struct Game        Game;
-typedef struct Extent       Extent;
+typedef struct Extent      Extent;
 typedef struct PlayerShip  PlayerShip;
 
 struct Point
@@ -110,20 +98,23 @@ struct PlayerShip
   unsigned int  flags;
 };
 
-struct Game
+struct DrawList
 {
-  pqt_QuadTree     qtree;
   Vertex           vertices[MAX_VERTICES];
-  unsigned int     numvertices;
   Shape            shapes[MAX_SHAPES];
   GameObject       gameobjects[MAX_OBJECTS];
   Object_Attr      objects[MAX_OBJECTS];
+  unsigned int     numvertices;
   unsigned int     numshapes;
-  unsigned int     switchover[100];
   unsigned int     numobjects;
-  Extent           planet_extents;
-  Extent           asteroid_extents;
-  Extent           ship_extents;
+  unsigned int     switchover[100];
+};
+
+
+struct Game
+{
+  DrawList         dlist;
+  pqt_QuadTree     qtree;
   double           aspect_ratio;
   double           scale;
   double           commanded_scale;

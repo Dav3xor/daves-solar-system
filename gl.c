@@ -92,8 +92,11 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
   glGenBuffers (1, &game.gl.vbo);
 
   glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
-  glBufferData (GL_ARRAY_BUFFER, sizeof(game.vertices), &game.vertices[0], GL_STATIC_DRAW);
-  printf("g.v = %d\n",sizeof(game.vertices));
+  glBufferData (GL_ARRAY_BUFFER, 
+                sizeof(game.dlist.vertices), 
+                &game.dlist.vertices[0], 
+                GL_STATIC_DRAW);
+
 
   game.gl.vao = 0;
   glGenVertexArrays (1, &game.gl.vao);
@@ -173,17 +176,17 @@ void gl_buildshaders(Game *game)
   printf("colors_loc = %d\n",game->gl.shape.colors_loc);
 }
 
-static const void gl_draw_shape_block(const Game *game,
+static const void gl_draw_shape_block(const DrawList *dlist,
                                       unsigned int block, 
                                       unsigned int start, 
                                       unsigned int stop)
 {
-  glUniform3fv(game->gl.shape.attr_loc,
+  glUniform3fv(game.gl.shape.attr_loc,
                MAX_OBJ_PER_PASS,
-               (const GLfloat *)&game->objects[block*MAX_OBJ_PER_PASS]);
+               (const GLfloat *)&dlist->objects[block*MAX_OBJ_PER_PASS]);
   
   for (unsigned int i=start; i<stop; i++) {
-    const Shape *curshape = &game->shapes[i];
+    const Shape *curshape = &dlist->shapes[i];
     if (!(curshape->flags&SHAPE_FLAG_SKIP)) {
       if (curshape->flags&SHAPE_FLAG_LINELOOP) {
         glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
@@ -194,9 +197,9 @@ static const void gl_draw_shape_block(const Game *game,
   }
 }
 
-void gl_draw_shapes(const Game *game)
+void gl_draw_shapes(const DrawList *dlist)
 {
-  unsigned int numswitchovers = game->numobjects/MAX_OBJ_PER_PASS;
+  unsigned int numswitchovers = dlist->numobjects/MAX_OBJ_PER_PASS;
   /*
   for(int i = 0; i< numswitchovers; i++){
     printf("xx %d %d\n",i,game->switchover[i]);
@@ -206,14 +209,14 @@ void gl_draw_shapes(const Game *game)
   unsigned int start = 0;
   unsigned int stop  = 0;
   for(i=0; i<numswitchovers; i++) {
-    stop = game->switchover[i];
+    stop = dlist->switchover[i];
     //printf("switchover: %d %d %d\n",i,start,stop);
-    gl_draw_shape_block(game,i,start,stop); 
+    gl_draw_shape_block(dlist,i,start,stop); 
     start = stop;
   }
-  if(stop != game->numshapes) {
+  if(stop != dlist->numshapes) {
     //printf("leftover: %d %d %d\n",i,start,game->numshapes);
-    gl_draw_shape_block(game,i,start,game->numshapes);
+    gl_draw_shape_block(dlist,i,start,dlist->numshapes);
   }
 }
 
@@ -247,13 +250,13 @@ bool gl_handle_input(GLFWwindow *window)
     return false;
   }
   if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-    game.objects[0].orientation += .05;
+    game.dlist.objects[0].orientation += .05;
   }
   if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-    game.objects[0].orientation -= .05;
+    game.dlist.objects[0].orientation -= .05;
   }
   if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-    do_thrust(&game.gameobjects[0]);
+    do_thrust(&game.dlist.gameobjects[0]);
   }
   if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
     game.commanded_scale *= 1.2;
@@ -271,7 +274,7 @@ void game_loop(GLFWwindow *window)
   while (running) {
     counter++;
 
-    do_move(&game.gameobjects[0]);
+    do_move(&game.dlist.gameobjects[0]);
 
 
 
@@ -281,7 +284,7 @@ void game_loop(GLFWwindow *window)
     game.origin.y = do_transition(game.origin.y,game.commanded_origin.y);
     
     gl_setup_shape_shader(window);
-    gl_draw_shapes(&game);
+    gl_draw_shapes(&game.dlist);
 
     if (glfwWindowShouldClose(window)) {
       running = false;
