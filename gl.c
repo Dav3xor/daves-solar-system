@@ -38,6 +38,34 @@ void gl_error(void)
   }
 }
 
+void gl_set_buffer_objects(DrawList *list)
+{
+  list->vbo = 0;
+  glGenBuffers (1, &list->vbo);
+
+  glBindBuffer (GL_ARRAY_BUFFER, list->vbo);
+  glBufferData (GL_ARRAY_BUFFER, 
+                sizeof(list->vertices), 
+                &list->vertices[0], 
+                GL_STATIC_DRAW);
+
+
+  list->vao = 0;
+  glGenVertexArrays (1, &list->vao);
+  glBindVertexArray (list->vao);
+  glEnableVertexAttribArray (0);
+  glEnableVertexAttribArray (1);
+  glEnableVertexAttribArray (2);
+
+  glBindBuffer (GL_ARRAY_BUFFER, list->vbo);
+  glVertexAttribPointer  (0, 2, GL_DOUBLE, GL_FALSE, sizeof(Vertex), 0);
+  glVertexAttribIPointer (1, 1, GL_UNSIGNED_INT,     sizeof(Vertex), sizeof(Point));
+  glVertexAttribIPointer (2, 1, GL_UNSIGNED_INT,     
+                          sizeof(Vertex), 
+                          sizeof(Point)+sizeof(uint32_t));
+
+}
+
 GLFWwindow *gl_init(int argc,char *argv[]) {
   // start GL context and O/S window using the GLFW helper library
   if (!glfwInit ()) {
@@ -88,32 +116,12 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
     -0.5f, -0.5f
   };
 
-  game.gl.vbo = 0;
-  glGenBuffers (1, &game.gl.vbo);
-
-  glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
-  glBufferData (GL_ARRAY_BUFFER, 
-                sizeof(game.dlist.vertices), 
-                &game.dlist.vertices[0], 
-                GL_STATIC_DRAW);
-
-
-  game.gl.vao = 0;
-  glGenVertexArrays (1, &game.gl.vao);
-  glBindVertexArray (game.gl.vao);
-  glEnableVertexAttribArray (0);
-  glEnableVertexAttribArray (1);
-  glEnableVertexAttribArray (2);
-
-  glBindBuffer (GL_ARRAY_BUFFER, game.gl.vbo);
-  glVertexAttribPointer  (0, 2, GL_DOUBLE,         GL_FALSE, sizeof(Vertex), 0);
-  glVertexAttribIPointer (1, 1, GL_UNSIGNED_INT,             sizeof(Vertex), sizeof(Point));
-  glVertexAttribIPointer (2, 1, GL_UNSIGNED_INT,             sizeof(Vertex), sizeof(Point)+sizeof(uint32_t));
+  gl_set_buffer_objects(&game.ships);
+  gl_set_buffer_objects(&game.asteroids);
+  gl_set_buffer_objects(&game.planets);
 
   return window;
 }
-
-
 
 void gl_buildshaders(Game *game)
 {
@@ -199,6 +207,7 @@ static const void gl_draw_shape_block(const DrawList *dlist,
 
 void gl_draw_shapes(const DrawList *dlist)
 {
+  glBindVertexArray (dlist->vao);
   unsigned int numswitchovers = dlist->numobjects/MAX_OBJ_PER_PASS;
   /*
   for(int i = 0; i< numswitchovers; i++){
@@ -220,7 +229,7 @@ void gl_draw_shapes(const DrawList *dlist)
   }
 }
 
-void gl_setup_shape_shader(GLFWwindow * window)
+void gl_setup_shape_shader(DrawList *list)
 {
   glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glUseProgram (game.gl.shape.program);
@@ -235,7 +244,6 @@ void gl_setup_shape_shader(GLFWwindow * window)
   glUniform4fv(game.gl.shape.colors_loc,
                MAX_SHAPE_COLORS,
                (const GLfloat *)&shape_colors[0][0]);
-  glBindVertexArray (game.gl.vao);
 }
 
 bool gl_handle_input(GLFWwindow *window)
@@ -250,13 +258,13 @@ bool gl_handle_input(GLFWwindow *window)
     return false;
   }
   if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-    game.dlist.objects[0].orientation += .05;
+    game.ships.objects[0].orientation += .05;
   }
   if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-    game.dlist.objects[0].orientation -= .05;
+    game.ships.objects[0].orientation -= .05;
   }
   if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-    do_thrust(&game.dlist.gameobjects[0]);
+    do_thrust(&game.ships.gameobjects[0]);
   }
   if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
     game.commanded_scale *= 1.2;
@@ -274,7 +282,7 @@ void game_loop(GLFWwindow *window)
   while (running) {
     counter++;
 
-    do_move(&game.dlist.gameobjects[0]);
+    do_move(&game.ships.gameobjects[0]);
 
 
 
@@ -283,8 +291,11 @@ void game_loop(GLFWwindow *window)
     game.origin.x = do_transition(game.origin.x,game.commanded_origin.x);
     game.origin.y = do_transition(game.origin.y,game.commanded_origin.y);
     
-    gl_setup_shape_shader(window);
-    gl_draw_shapes(&game.dlist);
+    gl_setup_shape_shader(&game.asteroids);
+
+    gl_draw_shapes(&game.asteroids);
+    gl_draw_shapes(&game.planets);
+    gl_draw_shapes(&game.ships);
 
     if (glfwWindowShouldClose(window)) {
       running = false;

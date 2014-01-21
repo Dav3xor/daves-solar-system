@@ -167,7 +167,7 @@ GameObject *poly_ship(void)
   points[6].x = -.0050;
   points[6].y = 0.0;
  
-  return make_object(&game.dlist, points, &shapes[0], 2);
+  return make_object(&game.ships, points, &shapes[0], 2);
 }
 
 GameObject *poly_triangle(double size)
@@ -180,7 +180,7 @@ GameObject *poly_triangle(double size)
   shape.flags      = SHAPE_FLAG_TRIANGLES;
   shape.numpoints  = 3;
   
-  return make_object(&game.dlist, points,&shape,1);
+  return make_object(&game.asteroids, points,&shape,1);
 }
 
 GameObject *poly_planet(double size, double mass,
@@ -195,7 +195,7 @@ GameObject *poly_planet(double size, double mass,
   shape.flags      = SHAPE_FLAG_LINELOOP;
   shape.numpoints  = numpoints;
   
-  GameObject *gobject = make_object(&game.dlist, points,&shape,1);
+  GameObject *gobject = make_object(&game.planets, points,&shape,1);
   if (gobject) {
     gobject->position = position;
     gobject->velocity = velocity;
@@ -232,7 +232,7 @@ GameObject *poly_asteroid(unsigned int seed)
   shape.flags      = SHAPE_FLAG_LINELOOP;
   shape.numpoints  = numsides;
   
-  GameObject *gobject = make_object(&game.dlist, b,&shape,1);
+  GameObject *gobject = make_object(&game.asteroids, b,&shape,1);
   if (gobject) {
     double angle = (rand()%628)/100.0;
     double distance = 300 + (rand()%10000)/50.0;

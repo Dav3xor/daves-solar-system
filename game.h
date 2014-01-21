@@ -100,6 +100,8 @@ struct PlayerShip
 
 struct DrawList
 {
+  GLuint           vao;
+  GLuint           vbo;
   Vertex           vertices[MAX_VERTICES];
   Shape            shapes[MAX_SHAPES];
   GameObject       gameobjects[MAX_OBJECTS];
@@ -113,7 +115,9 @@ struct DrawList
 
 struct Game
 {
-  DrawList         dlist;
+  DrawList         ships;
+  DrawList         planets;
+  DrawList         asteroids;
   pqt_QuadTree     qtree;
   double           aspect_ratio;
   double           scale;
@@ -123,8 +127,6 @@ struct Game
   PlayerShip       playership;
   struct gl
   {
-    GLuint vao;
-    GLuint vbo;
     
     struct shape
     {
