@@ -1,6 +1,79 @@
 #include "game.h"
 extern Game game;
 
+
+GameObject *make_object(DrawList *dlist, Point *points, Shape *shapes, unsigned int numshapes)
+{
+  double blah = dlist->numobjects *.2;
+  if(dlist->numobjects+1 > MAX_OBJECTS) {
+    printf("ERROR: out of game objects\n");
+    return NULL;
+  }
+
+  if(dlist->numshapes+numshapes > MAX_SHAPES) {
+    printf("ERROR: out of shapes\n");
+    return NULL;
+  }
+  
+  GameObject *gobject = &dlist->gameobjects[dlist->numobjects];
+  gobject->obj_attr = &dlist->objects[dlist->numobjects];
+   
+  
+  Shape *startshape = &dlist->shapes[dlist->numshapes];
+  unsigned int startpoint = 0;
+  unsigned int objposition = dlist->numobjects%MAX_OBJ_PER_PASS;
+
+  for(int i=0; i<numshapes; i++) {
+    Shape *shape = &shapes[i];
+    if ((dlist->numvertices+shape->numpoints > MAX_VERTICES)) {
+      printf("ERROR: out of vertices\n");
+      return NULL;
+    }
+    shape->startindex = dlist->numvertices;
+    shape->vertices = &dlist->vertices[dlist->numvertices];
+    
+    for (int i=startpoint; i<startpoint+shape->numpoints; i++){
+      dlist->vertices[dlist->numvertices].position.x   = points[i].x;
+      dlist->vertices[dlist->numvertices].position.y   = points[i].y;
+      dlist->vertices[dlist->numvertices].obj_index    = objposition;
+      dlist->vertices[dlist->numvertices].color_index  = dlist->numobjects%5;
+      /*
+      printf("(%f,%f) - %d\n",game.vertices[game.numvertices].position.x,
+                              game.vertices[game.numvertices].position.y,
+                              game.vertices[game.numvertices].obj_index);
+      */
+      dlist->numvertices++;
+    }
+    dlist->shapes[dlist->numshapes] = *shape;
+    dlist->numshapes++;
+    startpoint += shape->numpoints; 
+  }
+  
+  gobject->numshapes  = numshapes;
+  gobject->shapes     = startshape;
+  gobject->position.x = 0;
+  gobject->position.y = 0;
+  dlist->objects[dlist->numobjects].orientation = 0.0;
+  dlist->objects[dlist->numobjects].x = blah;//.1 + ((rand()%1000)*.0008);
+  dlist->objects[dlist->numobjects].y = 0.0;//.1 + ((rand()%1000)*.0008);
+  /* 
+  printf("%.5d (%f,%f) o = %f\n",dlist->numobjects,dlist->objects[dlist->numobjects].x,
+                     dlist->objects[dlist->numobjects].y,
+                     dlist->objects[dlist->numobjects].orientation);
+  */
+  dlist->numobjects++;
+  
+  if((dlist->numobjects) && (dlist->numobjects%MAX_OBJ_PER_PASS == 0)){
+    unsigned int position = (dlist->numobjects/MAX_OBJ_PER_PASS) - 1;
+    printf("seeting switchover: %d, %d\n",position,dlist->numshapes); 
+    dlist->switchover[position] = dlist->numshapes;
+  }
+
+  return gobject;
+}
+
+
+
 void poly_regular(unsigned int numsides, double distance, Point *points)
 {
   for(int i = 0; i < numsides; i++) {
@@ -61,79 +134,6 @@ void printshapes(DrawList *dlist)
   printf("endshapes:\n");
 }
            
-GameObject *make_object(DrawList *dlist, Point *points, Shape *shapes, unsigned int numshapes)
-{
-  static double blah = 0.0;
-  if(dlist->numobjects+1 > MAX_OBJECTS) {
-    printf("ERROR: out of game objects\n");
-    return NULL;
-  }
-
-  if(dlist->numshapes+numshapes > MAX_SHAPES) {
-    printf("ERROR: out of shapes\n");
-    return NULL;
-  }
-  
-  GameObject *gobject = &dlist->gameobjects[dlist->numobjects];
-  gobject->obj_attr = &dlist->objects[dlist->numobjects];
-   
-  
-  Shape *startshape = &dlist->shapes[dlist->numshapes];
-  unsigned int startpoint = 0;
-  unsigned int objposition = dlist->numobjects%MAX_OBJ_PER_PASS;
-
-  for(int i=0; i<numshapes; i++) {
-    Shape *shape = &shapes[i];
-    if ((dlist->numvertices+shape->numpoints > MAX_VERTICES)) {
-      printf("ERROR: out of vertices\n");
-      return NULL;
-    }
-    shape->startindex = dlist->numvertices;
-    shape->vertices = &dlist->vertices[dlist->numvertices];
-    
-    for (int i=startpoint; i<startpoint+shape->numpoints; i++){
-      dlist->vertices[dlist->numvertices].position.x   = points[i].x;
-      dlist->vertices[dlist->numvertices].position.y   = points[i].y;
-      dlist->vertices[dlist->numvertices].obj_index    = objposition;
-      dlist->vertices[dlist->numvertices].color_index  = dlist->numobjects%5;
-      /*
-      printf("(%f,%f) - %d\n",game.vertices[game.numvertices].position.x,
-                              game.vertices[game.numvertices].position.y,
-                              game.vertices[game.numvertices].obj_index);
-      */
-      dlist->numvertices++;
-    }
-    dlist->shapes[dlist->numshapes] = *shape;
-    dlist->numshapes++;
-    startpoint += shape->numpoints; 
-  }
-  
-  gobject->numshapes  = numshapes;
-  gobject->shapes     = startshape;
-  gobject->position.x = 0;
-  gobject->position.y = 0;
-  dlist->objects[dlist->numobjects].orientation = 0.0;
-  dlist->objects[dlist->numobjects].x = blah;//.1 + ((rand()%1000)*.0008);
-  dlist->objects[dlist->numobjects].y = 0.0;//.1 + ((rand()%1000)*.0008);
-  blah += .2;
-  if(dlist->numobjects==1){
-    dlist->objects[dlist->numobjects].x = .5;
-  }
-  /*
-  printf("(%f,%f) o = %f\n",game.objects[game.numobjects].x,
-                     game.objects[game.numobjects].y,
-                     game.objects[game.numobjects].orientation);
-  */
-  dlist->numobjects++;
-  
-  if((dlist->numobjects) && (dlist->numobjects%MAX_OBJ_PER_PASS == 0)){
-    unsigned int position = (dlist->numobjects/MAX_OBJ_PER_PASS) - 1;
-    printf("seeting switchover: %d, %d\n",position,dlist->numshapes); 
-    dlist->switchover[position] = dlist->numshapes;
-  }
-
-  return gobject;
-}
 
 GameObject *poly_ship(void)
 {

@@ -70,7 +70,7 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
   // start GL context and O/S window using the GLFW helper library
   if (!glfwInit ()) {
     fprintf (stderr, "ERROR: could not start GLFW3\n");
-    return 1;
+    return NULL;
   } 
 
   // uncomment these lines if on Apple OS X
@@ -86,7 +86,7 @@ GLFWwindow *gl_init(int argc,char *argv[]) {
   if (!window) {
     fprintf (stderr, "ERROR: could not open window with GLFW3\n");
     glfwTerminate();
-    return 1;
+    return NULL;
   }
   glfwMakeContextCurrent (window);
                                   
@@ -208,6 +208,7 @@ static const void gl_draw_shape_block(const DrawList *dlist,
 void gl_draw_shapes(const DrawList *dlist)
 {
   glBindVertexArray (dlist->vao);
+  
   unsigned int numswitchovers = dlist->numobjects/MAX_OBJ_PER_PASS;
   /*
   for(int i = 0; i< numswitchovers; i++){
@@ -231,7 +232,6 @@ void gl_draw_shapes(const DrawList *dlist)
 
 void gl_setup_shape_shader(DrawList *list)
 {
-  glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glUseProgram (game.gl.shape.program);
 
   glUniform2f(game.gl.shape.origin_loc,
@@ -290,6 +290,8 @@ void game_loop(GLFWwindow *window)
     game.scale    = do_transition(game.scale,game.commanded_scale);
     game.origin.x = do_transition(game.origin.x,game.commanded_origin.x);
     game.origin.y = do_transition(game.origin.y,game.commanded_origin.y);
+    
+    glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     gl_setup_shape_shader(&game.asteroids);
 

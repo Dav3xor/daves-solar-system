@@ -91,7 +91,7 @@ static float shape_colors[MAX_SHAPE_COLORS][4] =
   { .5,  .5,  .5, 1.0},     // gray
   { .5,  .5, 1.0, 1.0},     // blue
   {1.0,  .5,  .5, 1.0},     // red
-  { .5, 1.0,  .5, 1.0} };
+  { .5, 1.0,  .5, 1.0} };   // green
 struct PlayerShip
 {
   GameObject   *ship;
@@ -161,6 +161,9 @@ GameObject *poly_triangle(double size);
 GameObject *poly_asteroid(unsigned int seed);
 GameObject *poly_ship(void);
 
+GameObject *poly_planet(double size, double mass,
+                        Point position, 
+                        Vector velocity);
 
 
 #define TIMING(a)                               \
