@@ -7,11 +7,14 @@ Game game;
 int main(int argc, char *argv[])
 {
   pqt_newtree(&game.qtree,3,7,(struct pqt_Extent) {-1000,-1000,1000,1000});
+  
+  game.playership.gobject = poly_ship();
+  game.playership.gattr   = &game.ships.objects[0];
+
   poly_planet(50.0, 10.0,
               (struct Point) {0.0, 0.0},
               (struct Vector) {0.0, 0.0});
-  for(int i=0; i<3; i++){
-    poly_ship();
+  for(int i=0; i<1000; i++){
     poly_asteroid(i);
   }
   //printshapes();

@@ -257,14 +257,15 @@ bool gl_handle_input(GLFWwindow *window)
     glfwTerminate();
     return false;
   }
+
   if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-    game.ships.objects[0].orientation += .05;
+    game.playership.gattr->orientation += .05;
   }
   if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-    game.ships.objects[0].orientation -= .05;
+    game.playership.gattr->orientation -= .05;
   }
   if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-    do_thrust(&game.ships.gameobjects[0]);
+    do_thrust(game.playership.gobject);
   }
   if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
     game.commanded_scale *= 1.2;

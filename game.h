@@ -10,7 +10,7 @@
 #define TAU 2*PI
 
 #define MAX_SHAPES  2500
-#define MAX_OBJECTS 500 
+#define MAX_OBJECTS 5000 
 #define MAX_OBJECTS_STR "500"
 #define MAX_OBJ_PER_PASS 100 
 
@@ -92,9 +92,11 @@ static float shape_colors[MAX_SHAPE_COLORS][4] =
   { .5,  .5, 1.0, 1.0},     // blue
   {1.0,  .5,  .5, 1.0},     // red
   { .5, 1.0,  .5, 1.0} };   // green
+
 struct PlayerShip
 {
-  GameObject   *ship;
+  GameObject    *gobject;
+  Object_Attr   *gattr;
   unsigned int  flags;
 };
 
