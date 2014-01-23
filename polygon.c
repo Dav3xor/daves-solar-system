@@ -146,31 +146,32 @@ GameObject *poly_ship(void)
   shapes[0].flags      = SHAPE_FLAG_LINELOOP;
   shapes[0].numpoints  = 4;
   
-  shapes[1].flags      = SHAPE_FLAG_TRIANGLES;
+  shapes[1].flags      = SHAPE_FLAG_TRIANGLES|SHAPE_FLAG_SKIP;
   shapes[1].numpoints  = 3;
   
   Point points[7];
+ 
+  double scale = 10;
+  points[0].x = .0025*scale;
+  points[0].y = 0.0*scale;
   
-  points[0].x = .0025;
-  points[0].y = 0.0;
+  points[1].x = -.0025*scale;
+  points[1].y = .0015*scale;
   
-  points[1].x = -.0025;
-  points[1].y = .0015;
+  points[2].x = -.0015*scale;
+  points[2].y = 0.0*scale;
   
-  points[2].x = -.0015;
-  points[2].y = 0.0;
-  
-  points[3].x = -.0025;
-  points[3].y = -.0015;
+  points[3].x = -.0025*scale;
+  points[3].y = -.0015*scale;
 
-  points[4].x = -.0030;
-  points[4].y = -.0006;
+  points[4].x = -.0030*scale;
+  points[4].y = -.0006*scale;
 
-  points[5].x = -.0030;
-  points[5].y =  .0006;
+  points[5].x = -.0030*scale;
+  points[5].y =  .0006*scale;
 
-  points[6].x = -.0050;
-  points[6].y = 0.0;
+  points[6].x = -.0050*scale;
+  points[6].y = 0.0*scale;
   
   GameObject *ship = make_object(&game.ships, points, &shapes[0], 2);
 
@@ -228,7 +229,7 @@ GameObject *poly_asteroid(unsigned int seed)
   unsigned int numsides = 5 + (rand() % 5); 
   
   // put a regular polygon into a
-  poly_regular(numsides, .04, a);
+  poly_regular(numsides, .2, a);
 
   // bumpify the regular polygon
   numsides = poly_bumpify(a,b,numsides);
@@ -257,7 +258,7 @@ GameObject *poly_asteroid(unsigned int seed)
     gobject->velocity.i = sin(angle+(3.14159/2.0))*speed;
     gobject->velocity.j = cos(angle+(3.14159/2.0))*speed;
     
-    gobject->mass = .00002 + (rand()%100)/1000000.0;
+    gobject->mass = .000002;
   }
   return gobject;
 }

@@ -98,6 +98,7 @@ struct PlayerShip
   GameObject    *gobject;
   Object_Attr   *gattr;
   unsigned int  flags;
+  GameObject    *landed_on;
 };
 
 struct DrawList

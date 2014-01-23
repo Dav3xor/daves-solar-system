@@ -266,7 +266,13 @@ bool gl_handle_input(GLFWwindow *window)
   }
   if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
     do_thrust(game.playership.gobject);
+    if(game.playership.gobject->shapes[1].flags & SHAPE_FLAG_SKIP) {
+      game.playership.gobject->shapes[1].flags ^= SHAPE_FLAG_SKIP;
+    }
+  } else {
+    game.playership.gobject->shapes[1].flags |= SHAPE_FLAG_SKIP;
   }
+
   if (glfwGetKey(window, GLFW_KEY_EQUAL) == GLFW_PRESS) {
     game.commanded_scale *= 1.2;
   }
@@ -278,9 +284,9 @@ bool gl_handle_input(GLFWwindow *window)
 
 void gravity_visit(pqt_LeafData *data, void *arg)
 {
-  GameObject *a = (GameObject *)data;
+  GameObject *a = (GameObject *)data->data;
   GameObject *b = (GameObject *)arg;
-  do_gravity_once(b,a);
+  do_gravity_once(a,b);
 }
 
 void game_loop(GLFWwindow *window)
