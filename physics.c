@@ -1,6 +1,6 @@
 #include "game.h"
 
-#define TEST_LORENTZ 1
+#define TEST_LORENTZ 0
 
 #ifdef TEST_LORENTZ
 extern Game game;
@@ -14,8 +14,8 @@ extern Game game;
 
 void do_thrust(GameObject *go)
 {
-  go->velocity.i += cos(go->obj_attr->orientation)*.0001;   
-  go->velocity.j += sin(go->obj_attr->orientation)*.0001;   
+  go->velocity.i -= cos(go->obj_attr->orientation)*.0001;   
+  go->velocity.j -= sin(go->obj_attr->orientation)*.0001;   
 }
 
 void do_gravity(GameObject *a, GameObject *b)
@@ -72,6 +72,20 @@ void do_gravity_once(GameObject *a, GameObject *b)
  
 
 }
+void do_move_obj(GameObject *a, double newx, double newy)
+{
+  double oldx = a->position.x;
+  double oldy = a->position.y;
+  
+  pqt_movepoint(&game.qtree,
+                oldx,oldy,
+                newx, newy,
+                a);
+
+  a->position.x = newx;
+  a->position.y = newy;
+
+}
 
 void do_move(GameObject *a)
 {
@@ -81,8 +95,10 @@ void do_move(GameObject *a)
   static float avg=.2;
   #endif
 
-  a->position.x += a->velocity.i;
-  a->position.y += a->velocity.j;
+  
+  do_move_obj(a, 
+              a->position.x + a->velocity.i, 
+              a->position.y + a->velocity.j); 
 
   a->obj_attr->x = a->position.x;  
   a->obj_attr->y = a->position.y;  

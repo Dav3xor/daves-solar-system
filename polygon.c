@@ -15,12 +15,12 @@ GameObject *make_object(DrawList *dlist, Point *points, Shape *shapes, unsigned 
     return NULL;
   }
   
-  GameObject *gobject = &dlist->gameobjects[dlist->numobjects];
-  gobject->obj_attr = &dlist->objects[dlist->numobjects];
+  GameObject *gobject      = &dlist->gameobjects[dlist->numobjects];
+  gobject->obj_attr        = &dlist->objects[dlist->numobjects];
    
   
-  Shape *startshape = &dlist->shapes[dlist->numshapes];
-  unsigned int startpoint = 0;
+  Shape *startshape        = &dlist->shapes[dlist->numshapes];
+  unsigned int startpoint  = 0;
   unsigned int objposition = dlist->numobjects%MAX_OBJ_PER_PASS;
 
   for(int i=0; i<numshapes; i++) {
@@ -68,6 +68,11 @@ GameObject *make_object(DrawList *dlist, Point *points, Shape *shapes, unsigned 
     printf("seeting switchover: %d, %d\n",position,dlist->numshapes); 
     dlist->switchover[position] = dlist->numshapes;
   }
+  
+  pqt_addpoint(&game.qtree, 
+           gobject->position.x,
+           gobject->position.y,
+           gobject);
 
   return gobject;
 }
@@ -166,8 +171,14 @@ GameObject *poly_ship(void)
 
   points[6].x = -.0050;
   points[6].y = 0.0;
- 
-  return make_object(&game.ships, points, &shapes[0], 2);
+  
+  GameObject *ship = make_object(&game.ships, points, &shapes[0], 2);
+
+  if (ship) {
+    do_move_obj (ship, 350.0, 350.0);
+  }
+
+  return ship;
 }
 
 GameObject *poly_triangle(double size)
@@ -197,14 +208,12 @@ GameObject *poly_planet(double size, double mass,
   
   GameObject *gobject = make_object(&game.planets, points,&shape,1);
   if (gobject) {
-    gobject->position = position;
+    do_move_obj(gobject,
+                position.x,
+                position.y);
     gobject->velocity = velocity;
     
     gobject->mass = mass;
-    pqt_addpoint(&game.qtree, 
-             gobject->position.x,
-             gobject->position.y,
-             gobject);
   }
   return gobject;
 }
@@ -240,17 +249,15 @@ GameObject *poly_asteroid(unsigned int seed)
     if(rand()%2) {
       angle += 3.14159;
     }
-    gobject->position.x = sin(angle) * distance;
-    gobject->position.y = cos(angle) * distance;
+
+    do_move_obj (gobject, 
+                 sin(angle) * distance,
+                 cos(angle) * distance);
     
     gobject->velocity.i = sin(angle+(3.14159/2.0))*speed;
     gobject->velocity.j = cos(angle+(3.14159/2.0))*speed;
     
     gobject->mass = .00002 + (rand()%100)/1000000.0;
-    pqt_addpoint(&game.qtree, 
-             gobject->position.x,
-             gobject->position.y,
-             gobject);
   }
   return gobject;
 }

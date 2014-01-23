@@ -148,7 +148,7 @@ double do_transition(const double current, const double commanded);
 void do_gravity_once(GameObject *a, GameObject *b);
 void do_move(GameObject *a);
 void do_thrust(GameObject *go);
-
+void do_move_obj(GameObject *a, double newx, double newy);
 void print_location(GameObject *a);
 
 void gl_display(void);

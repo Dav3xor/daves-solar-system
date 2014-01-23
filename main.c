@@ -14,9 +14,15 @@ int main(int argc, char *argv[])
   poly_planet(50.0, 10.0,
               (struct Point) {0.0, 0.0},
               (struct Vector) {0.0, 0.0});
+
   for(int i=0; i<1000; i++){
     poly_asteroid(i);
   }
+
+
+  printf("planet=%p\n",&game.planets.gameobjects[0]);
+  printf("ship=%p\n",&game.ships.gameobjects[0]);
+  printf("asteroid=%p\n",&game.asteroids.gameobjects[0]);
   //printshapes();
 
   /* 

@@ -140,8 +140,8 @@ void gl_buildshaders(Game *game)
   "void main () {\n"
   "  float cos_angle = cos(attributes[index].z);\n"
   "  float sin_angle = sin(attributes[index].z);\n"
-  "  float x = (origin.x + (position.x*cos_angle - position.y*sin_angle) + attributes[index].x)*scale.x;\n"
-  "  float y = (origin.y + (position.x*sin_angle + position.y*cos_angle) + attributes[index].y)*scale.y;\n"
+  "  float x = (origin.x + (position.x*cos_angle - position.y*sin_angle) - attributes[index].x)*scale.x;\n"
+  "  float y = (origin.y + (position.x*sin_angle + position.y*cos_angle) - attributes[index].y)*scale.y;\n"
   "  gl_Position = vec4 (x, y, 0.0, 1.0);\n"
   "  vert_color = colors[color_index];"
   "}\n";
@@ -276,18 +276,64 @@ bool gl_handle_input(GLFWwindow *window)
   return true;
 }
 
+void gravity_visit(pqt_LeafData *data, void *arg)
+{
+  GameObject *a = (GameObject *)data;
+  GameObject *b = (GameObject *)arg;
+  do_gravity_once(b,a);
+}
+
 void game_loop(GLFWwindow *window)
 {
   bool running = true;
   unsigned int counter = 0;
   while (running) {
     counter++;
+    for (int i=0; i<game.planets.numobjects; i++) {
+      for (int j=i+1; j<game.planets.numobjects; j++) {
+        do_gravity(&game.planets.gameobjects[i],
+                   &game.planets.gameobjects[j]);
+      }
+      for (int j=0; j<game.asteroids.numobjects; j++) {
+        do_gravity_once(&game.asteroids.gameobjects[j],
+                        &game.planets.gameobjects[i]);
+      }
+      for (int j=0; j<game.ships.numobjects; j++) {
+        do_gravity_once(&game.ships.gameobjects[j],
+                        &game.planets.gameobjects[i]);
+      }
+    }
 
-    do_move(&game.ships.gameobjects[0]);
+    for (int i=0; i<game.asteroids.numobjects; i++) {
+      pqt_maptonearby(&game.qtree, &gravity_visit, 
+                      &game.asteroids.gameobjects[i],
+                      game.asteroids.gameobjects[i].position.x,
+                      game.asteroids.gameobjects[i].position.y,
+                      15.0);
+    }
 
 
+    for (int i=0; i<game.planets.numobjects; i++) {
+      do_move(&game.planets.gameobjects[i]);
+    }
+
+    for (int i=0; i<game.asteroids.numobjects; i++) {
+      do_move(&game.asteroids.gameobjects[i]);
+    }
+    
+    for (int i=0; i<game.ships.numobjects; i++) {
+      do_move(&game.ships.gameobjects[i]);
+    }
+
+    
 
     // move camera
+    game.commanded_origin.x = game.playership.gobject->position.x;
+    game.commanded_origin.y = game.playership.gobject->position.y;
+    
+    game.origin.x = game.playership.gobject->position.x;
+    game.origin.y = game.playership.gobject->position.y;
+
     game.scale    = do_transition(game.scale,game.commanded_scale);
     game.origin.x = do_transition(game.origin.x,game.commanded_origin.x);
     game.origin.y = do_transition(game.origin.y,game.commanded_origin.y);
