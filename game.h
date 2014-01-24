@@ -75,6 +75,7 @@ struct GameObject
   Shape         *shapes;
   Point         position;
   Vector        velocity;
+  double        rotational_velocity;
   double        mass;
   unsigned int  numshapes;
   unsigned int  flags;

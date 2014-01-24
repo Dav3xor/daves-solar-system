@@ -87,7 +87,7 @@ void do_move_obj(GameObject *a, double newx, double newy)
 
 }
 
-void do_move(GameObject *a)
+void do_move(GameObject *gobject)
 {
   #ifdef TEST_LORENTZ
   static float min=10000.0;
@@ -96,15 +96,16 @@ void do_move(GameObject *a)
   #endif
 
   
-  do_move_obj(a, 
-              a->position.x + a->velocity.i, 
-              a->position.y + a->velocity.j); 
+  do_move_obj(gobject, 
+              gobject->position.x + gobject->velocity.i, 
+              gobject->position.y + gobject->velocity.j); 
 
-  a->obj_attr->x = a->position.x;  
-  a->obj_attr->y = a->position.y;  
+  gobject->obj_attr->x  = gobject->position.x;  
+  gobject->obj_attr->y  = gobject->position.y;  
+  gobject->obj_attr->orientation += gobject->rotational_velocity;
 
   #ifdef TEST_LORENTZ
-  double magnitude = vector_magnitude(&a->velocity);
+  double magnitude = vector_magnitude(&gobject->velocity);
   if (magnitude < min) {
     min = magnitude;
   } else if (magnitude > max) {

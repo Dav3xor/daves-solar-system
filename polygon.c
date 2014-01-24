@@ -259,6 +259,7 @@ GameObject *poly_asteroid(unsigned int seed)
     gobject->velocity.j = cos(angle+(3.14159/2.0))*speed;
     
     gobject->mass = .000002;
+    gobject->rotational_velocity = .005;
   }
   return gobject;
 }
