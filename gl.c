@@ -200,6 +200,8 @@ static const void gl_draw_shape_block(const DrawList *dlist,
         glDrawArrays(GL_LINE_LOOP,curshape->startindex,curshape->numpoints);
       } else if (curshape->flags&SHAPE_FLAG_TRIANGLES) {
         glDrawArrays(GL_TRIANGLES,curshape->startindex,curshape->numpoints);
+      } else if (curshape->flags&SHAPE_FLAG_LINE_STRIP) {
+        glDrawArrays(GL_LINE_STRIP,curshape->startindex,curshape->numpoints);
       }
     }
   }

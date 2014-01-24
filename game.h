@@ -22,6 +22,7 @@
 #define SHAPE_FLAG_SKIP         1
 #define SHAPE_FLAG_LINELOOP     2 
 #define SHAPE_FLAG_TRIANGLES    4 
+#define SHAPE_FLAG_LINE_STRIP   8
 
 typedef struct Point       Point;
 typedef struct Vertex      Vertex;

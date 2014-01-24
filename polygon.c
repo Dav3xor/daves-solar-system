@@ -227,9 +227,10 @@ GameObject *poly_asteroid(unsigned int seed)
 
   
   unsigned int numsides = 5 + (rand() % 5); 
-  
+  double radius = .2;
+
   // put a regular polygon into a
-  poly_regular(numsides, .2, a);
+  poly_regular(numsides, radius, a);
 
   // bumpify the regular polygon
   numsides = poly_bumpify(a,b,numsides);
@@ -238,11 +239,21 @@ GameObject *poly_asteroid(unsigned int seed)
   numsides = poly_bumpify(b,a,numsides);
   numsides = poly_bumpify(a,b,numsides);
 
-  Shape shape;
-  shape.flags      = SHAPE_FLAG_LINELOOP;
-  shape.numpoints  = numsides;
-  
-  GameObject *gobject = make_object(&game.asteroids, b,&shape,1);
+  Shape shapes[2];
+  shapes[0].flags      = SHAPE_FLAG_LINELOOP;
+  shapes[0].numpoints  = numsides;
+ 
+  // landing platform
+  shapes[1].flags      = SHAPE_FLAG_LINE_STRIP;
+  shapes[1].numpoints  = 2;
+ 
+  double location    = .1;
+  double distance    = radius + (radius*.1);
+  double platform_width = .02 * radius*TAU;
+  b[numsides] =   (Point){sin(location)*distance, cos(location)*distance};
+  b[numsides+1] = (Point){sin(location+.4)*distance, cos(location+.4)*distance};
+
+  GameObject *gobject = make_object(&game.asteroids, b,&shapes[0],2);
   if (gobject) {
     double angle = (rand()%628)/100.0;
     double distance = 300 + (rand()%10000)/50.0;
