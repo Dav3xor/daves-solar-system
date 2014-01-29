@@ -218,6 +218,14 @@ GameObject *poly_planet(double size, double mass,
   }
   return gobject;
 }
+
+
+#define POLAR(angle,distance)  \
+  (Point){cos(angle)*distance,  \
+          sin(angle)*distance};
+
+
+
 GameObject *poly_asteroid(unsigned int seed) 
 {
   Point a[100];
@@ -254,7 +262,7 @@ GameObject *poly_asteroid(unsigned int seed)
 */
   
 
-  double platform_arcwidth = .2 * radius*TAU;
+  double platform_arcwidth = .4 * radius*TAU;
   double platform_height   = radius+.01;
   unsigned int start_point = 0;
   unsigned int end_point = 0; 
@@ -262,7 +270,7 @@ GameObject *poly_asteroid(unsigned int seed)
   double end_angle = 0.0;
   
   for (end_point=start_point+1 ;end_point<numsides;end_point++) {
-    end_angle = atan2(b[end_point+1].y, b[end_point+1].x);
+    end_angle = atan2(b[end_point].y, b[end_point].x);
     printf("%f - %f\n", start_angle,end_angle);
     if (start_angle + platform_arcwidth < end_angle){
       break;
@@ -271,11 +279,9 @@ GameObject *poly_asteroid(unsigned int seed)
   
   double platform_center = start_angle + (end_angle-start_angle)/2.0;
   b[numsides]    = b[start_point];
+  b[numsides+1]  = POLAR(platform_center-(platform_arcwidth/2.0), platform_height);
+  b[numsides+2]  = POLAR(platform_center+(platform_arcwidth/2.0), platform_height);
   b[numsides+3]  = b[end_point];
-  b[numsides+1]  = (Point){cos(platform_center-(platform_arcwidth/2.0))*platform_height,
-                           sin(platform_center-(platform_arcwidth/2.0))*platform_height};
-  b[numsides+2]  = (Point){cos(platform_center+(platform_arcwidth/2.0))*platform_height,
-                           sin(platform_center+(platform_arcwidth/2.0))*platform_height};
 
 
 /*
