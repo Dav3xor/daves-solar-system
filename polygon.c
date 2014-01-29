@@ -82,8 +82,8 @@ GameObject *make_object(DrawList *dlist, Point *points, Shape *shapes, unsigned 
 void poly_regular(unsigned int numsides, double distance, Point *points)
 {
   for(int i = 0; i < numsides; i++) {
-    points[i].x = sin( i * (TAU/numsides) )*distance;
-    points[i].y = cos( i * (TAU/numsides) )*distance;
+    points[i].x = cos( i * (TAU/numsides) )*distance;
+    points[i].y = sin( i * (TAU/numsides) )*distance;
   }
 }
 
@@ -245,14 +245,64 @@ GameObject *poly_asteroid(unsigned int seed)
  
   // landing platform
   shapes[1].flags      = SHAPE_FLAG_LINE_STRIP;
-  shapes[1].numpoints  = 2;
- 
+  shapes[1].numpoints  = 4;
+
+/*
   double location    = .1;
   double distance    = radius + (radius*.1);
   double platform_width = .02 * radius*TAU;
-  b[numsides] =   (Point){sin(location)*distance, cos(location)*distance};
-  b[numsides+1] = (Point){sin(location+.4)*distance, cos(location+.4)*distance};
+*/
+  
 
+  double platform_arcwidth = .2 * radius*TAU;
+  double platform_height   = radius+.01;
+  unsigned int start_point = 0;
+  unsigned int end_point = 0; 
+  double start_angle = atan2(b[start_point].y, b[start_point].x);
+  double end_angle = 0.0;
+  
+  for (end_point=start_point+1 ;end_point<numsides;end_point++) {
+    end_angle = atan2(b[end_point+1].y, b[end_point+1].x);
+    printf("%f - %f\n", start_angle,end_angle);
+    if (start_angle + platform_arcwidth < end_angle){
+      break;
+    }
+  }
+  
+  double platform_center = start_angle + (end_angle-start_angle)/2.0;
+  b[numsides]    = b[start_point];
+  b[numsides+3]  = b[end_point];
+  b[numsides+1]  = (Point){cos(platform_center-(platform_arcwidth/2.0))*platform_height,
+                           sin(platform_center-(platform_arcwidth/2.0))*platform_height};
+  b[numsides+2]  = (Point){cos(platform_center+(platform_arcwidth/2.0))*platform_height,
+                           sin(platform_center+(platform_arcwidth/2.0))*platform_height};
+
+
+/*
+  int i = 0;
+  printf(".....\n");
+  for(; i<numsides; i++) {
+    printf("%f,%f",atan2(b[i].y,   b[i].x),
+                   atan2(b[i+1].y, b[i+1].x));
+
+    if((atan2(0.0-b[i].y, b[i].x) < .1)&&(atan2(0.0-b[i+1].y, b[i+1].x) > .1)) {
+      break;
+    }
+  }
+  b[numsides] = b[i];
+  b[numsides+1] =   (Point){cos(location)*distance, sin(location)*distance};
+  b[numsides+2] = (Point){cos(location+.4)*distance, sin(location+.4)*distance};
+ 
+  printf("%d",i);
+  for(; i<numsides; i++) {
+    printf("+");
+    if(atan2(0.0-b[i].y, b[i].x) > .1+.4) {
+      break;
+    }
+  }
+  b[numsides+3] = b[i];
+  printf("\n");
+*/
   GameObject *gobject = make_object(&game.asteroids, b,&shapes[0],2);
   if (gobject) {
     double angle = (rand()%628)/100.0;
