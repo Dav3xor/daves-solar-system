@@ -283,14 +283,14 @@ GameObject *poly_asteroid(unsigned int seed)
   Point *base = &b[numsides];
 
   double platform_center = start_angle + (end_angle-start_angle)/2.0;
-  b[numsides]    = ADDPOINT(shapes[1],base,b[start_point]);
-  b[numsides+1]  = ADDPOINT(shapes[1],base,
-                            POLAR(platform_center-(platform_arcwidth/2.0),
-                                  platform_height));
-  b[numsides+2]  = ADDPOINT(shapes[1],base,
-                            POLAR(platform_center+(platform_arcwidth/2.0),
-                                  platform_height));
-  b[numsides+3]  = ADDPOINT(shapes[1],base,b[end_point]);
+  ADDPOINT(shapes[1],base,b[start_point]);
+  ADDPOINT(shapes[1],base,
+           POLAR(platform_center-(platform_arcwidth/2.0),
+                 platform_height));
+  ADDPOINT(shapes[1],base,
+           POLAR(platform_center+(platform_arcwidth/2.0),
+                 platform_height));
+  ADDPOINT(shapes[1],base,b[end_point]);
 
 
 /*
