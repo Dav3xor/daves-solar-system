@@ -220,9 +220,13 @@ GameObject *poly_planet(double size, double mass,
 }
 
 
-#define POLAR(angle,distance)  \
-  (Point){cos(angle)*distance,  \
+#define POLAR(angle,distance)           \
+  (Point){cos(angle)*distance,          \
           sin(angle)*distance};
+
+#define ADDPOINT(shape,points, point)   \
+  points[shape.numpoints] = point;      \
+  shape.numpoints += 1;                 \
 
 
 
@@ -253,7 +257,7 @@ GameObject *poly_asteroid(unsigned int seed)
  
   // landing platform
   shapes[1].flags      = SHAPE_FLAG_LINE_STRIP;
-  shapes[1].numpoints  = 4;
+  shapes[1].numpoints  = 0;
 
 /*
   double location    = .1;
@@ -261,7 +265,6 @@ GameObject *poly_asteroid(unsigned int seed)
   double platform_width = .02 * radius*TAU;
 */
   
-
   double platform_arcwidth = .4 * radius*TAU;
   double platform_height   = radius+.01;
   unsigned int start_point = 0;
@@ -277,11 +280,17 @@ GameObject *poly_asteroid(unsigned int seed)
     }
   }
   
+  Point *base = &b[numsides];
+
   double platform_center = start_angle + (end_angle-start_angle)/2.0;
-  b[numsides]    = b[start_point];
-  b[numsides+1]  = POLAR(platform_center-(platform_arcwidth/2.0), platform_height);
-  b[numsides+2]  = POLAR(platform_center+(platform_arcwidth/2.0), platform_height);
-  b[numsides+3]  = b[end_point];
+  b[numsides]    = ADDPOINT(shapes[1],base,b[start_point]);
+  b[numsides+1]  = ADDPOINT(shapes[1],base,
+                            POLAR(platform_center-(platform_arcwidth/2.0),
+                                  platform_height));
+  b[numsides+2]  = ADDPOINT(shapes[1],base,
+                            POLAR(platform_center+(platform_arcwidth/2.0),
+                                  platform_height));
+  b[numsides+3]  = ADDPOINT(shapes[1],base,b[end_point]);
 
 
 /*
