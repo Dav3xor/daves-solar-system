@@ -282,9 +282,16 @@ GameObject *poly_asteroid(unsigned int seed)
   */
 
   Point *base = &b[numsides];
-  for(double i = start_angle; i< end_angle; i += (end_angle-start_angle)/5.0) {
+  for(double i = start_angle; i <= end_angle; i += (end_angle-start_angle)/5.0) {
     ADDPOINT(shapes[1],base,POLAR(i,platform_height));
   }
+
+  ADDPOINT(shapes[1], base, POLAR(end_angle,platform_height));
+
+  for(double i = end_angle; i >= start_angle; i -= (end_angle-start_angle)/5.0) {
+    ADDPOINT(shapes[1],base,POLAR(i,platform_height-.01));
+  }
+  ADDPOINT(shapes[1], base, POLAR(start_angle,platform_height-.01));
 
   GameObject *gobject = make_object(&game.asteroids, b,&shapes[0],2);
   if (gobject) {
