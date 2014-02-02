@@ -259,39 +259,41 @@ GameObject *poly_asteroid(unsigned int seed)
   shapes[1].flags      = SHAPE_FLAG_LINELOOP;
   shapes[1].numpoints  = 0;
 
-/*
-  double location    = .1;
-  double distance    = radius + (radius*.1);
-  double platform_width = .02 * radius*TAU;
-*/
   
   double platform_arcwidth = .4 * radius*TAU;
-  double platform_height   = radius+.01;
+  double platform_height   = radius+.1;
   unsigned int start_point = 0;
   unsigned int end_point = 0; 
   double start_angle = atan2(b[start_point].y, b[start_point].x);
   double end_angle = start_angle+platform_arcwidth;
-  /* 
-  for (end_point=start_point+1 ;end_point<numsides;end_point++) {
-    end_angle = atan2(b[end_point].y, b[end_point].x);
-    printf("%f - %f\n", start_angle,end_angle);
-    if (start_angle + platform_arcwidth < end_angle){
-      break;
-    }
-  }
-  */
 
   Point *base = &b[numsides];
+  ADDPOINT(shapes[1], base, POLAR(0,.2));
+  ADDPOINT(shapes[1], base, POLAR(TAU/3.0,.2));
+  ADDPOINT(shapes[1], base, POLAR(TAU/3.0*2.0,.2));
+
+  ADDPOINT(shapes[1], base, POLAR(0,.2));
+  ADDPOINT(shapes[1], base, POLAR(0,.19));
+
+  ADDPOINT(shapes[1], base, POLAR(TAU/3.0,.19));
+  ADDPOINT(shapes[1], base, POLAR(TAU/3.0*2.0,.19));
+  ADDPOINT(shapes[1], base, POLAR(0,.19));
+  /* 
+  ADDPOINT(shapes[1], base, POLAR(start_angle,platform_height));
+
   for(double i = start_angle; i <= end_angle; i += (end_angle-start_angle)/5.0) {
     ADDPOINT(shapes[1],base,POLAR(i,platform_height));
   }
 
   ADDPOINT(shapes[1], base, POLAR(end_angle,platform_height));
-
+  ADDPOINT(shapes[1], base, POLAR(end_angle,platform_height-.005));
   for(double i = end_angle; i >= start_angle; i -= (end_angle-start_angle)/5.0) {
     ADDPOINT(shapes[1],base,POLAR(i,platform_height-.01));
   }
   ADDPOINT(shapes[1], base, POLAR(start_angle,platform_height-.01));
+  ADDPOINT(shapes[1], base, POLAR(start_angle,platform_height-.005));
+  ADDPOINT(shapes[1], base, POLAR(start_angle,platform_height));
+  */
 
   GameObject *gobject = make_object(&game.asteroids, b,&shapes[0],2);
   if (gobject) {
