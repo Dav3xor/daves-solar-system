@@ -265,19 +265,13 @@ GameObject *poly_asteroid(unsigned int seed)
   unsigned int start_point = 0;
   unsigned int end_point = 0; 
   double start_angle = atan2(b[start_point].y, b[start_point].x);
-  double end_angle = start_angle+platform_arcwidth;
+  double end_angle = start_angle-platform_arcwidth;
 
   Point *base = &b[numsides];
-  ADDPOINT(shapes[1], base, POLAR(0,.2));
-  ADDPOINT(shapes[1], base, POLAR(TAU/3.0,.2));
-  ADDPOINT(shapes[1], base, POLAR(TAU/3.0*2.0,.2));
-
-  ADDPOINT(shapes[1], base, POLAR(0,.2));
-  ADDPOINT(shapes[1], base, POLAR(0,.19));
-
-  ADDPOINT(shapes[1], base, POLAR(TAU/3.0,.19));
-  ADDPOINT(shapes[1], base, POLAR(TAU/3.0*2.0,.19));
-  ADDPOINT(shapes[1], base, POLAR(0,.19));
+  ADDPOINT(shapes[1], base, POLAR(start_angle, platform_height));
+  ADDPOINT(shapes[1], base, POLAR(end_angle, platform_height));
+  ADDPOINT(shapes[1], base, POLAR(end_angle, platform_height-.1));
+  ADDPOINT(shapes[1], base, POLAR(start_angle, platform_height-.1));
   /* 
   ADDPOINT(shapes[1], base, POLAR(start_angle,platform_height));
 
